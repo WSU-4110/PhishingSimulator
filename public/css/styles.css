@@ -1,1 +1,12 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 2rem;
+  background-color: #f3f3f3;
+}
+
+form {
+  background: white;
+  padding: 1rem;
+  border-radius: 5px;
+}
 
