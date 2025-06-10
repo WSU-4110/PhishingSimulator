@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const fs = require('fs');
 const path = require('path');
+//must add data for video storage so that the videos are private and secure
 
 app.use(express.json());
 app.use(express.static('public')); // Serve static files
