@@ -6,6 +6,11 @@ const path = require('path');
 app.use(express.json());
 app.use(express.static('public')); // Serve static files
 
+//for modules 
+app.get('/modules.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'modules.html'));
+});
+
 // Endpoint to track phishing attempts
 app.post('/api/track-phish', (req, res) => {
   const { username, timestamp } = req.body;
