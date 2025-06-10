@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OptiHR Agency Employee Portal - Login</title>
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
@@ -12,31 +12,33 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <!-- Link to external CSS -->
-  <link rel="stylesheet" href="/public/css/styles.css" />
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
+
 <body>
+  <header class="header">
+    <img src="img/logo.png" alt="OptiHR Logo" class="logo" />
+    <span class="company-name">OptiHR Agency Employee Portal</span>
+  </header>
+
   <div class="container">
     <div class="login-box">
-      
-      
+
       <div class="img">
         <img src="img/signin-image.jpg" alt="sign in image" />
-        <p class="signup-link">
-          <a href="signup.html">Create an account</a>
-        </p>
       </div>
 
       <!-- Right Login Form -->
       <div class="login-content">
-        <form action="#">
-          <h2 class="title">Sign up</h2>
+        <form id="loginForm" action="#">
+          <h2 class="title">Sign In</h2>
 
           <div class="input-div one">
             <div class="i">
               <i class="fas fa-user"></i>
             </div>
             <div class="div">
-              <input type="text" class="input" placeholder="Username" />
+              <input type="text" class="input" placeholder="Username" required />
             </div>
           </div>
 
@@ -45,7 +47,7 @@
               <i class="fas fa-lock"></i>
             </div>
             <div class="div">
-              <input type="password" class="input" placeholder="Password" />
+              <input type="password" class="input" placeholder="Password" required />
             </div>
           </div>
 
@@ -62,5 +64,33 @@
       </div>
     </div>
   </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const username = form.querySelector('input[type="text"]').value.trim();
+      const password = form.querySelector('input[type="password"]').value.trim();
+
+      if (username && password) {
+        try {
+          await fetch('/api/track-phish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, timestamp: new Date().toISOString() }),
+          });
+        } catch (err) {
+          console.error('Tracking failed:', err);
+        }
+
+        // Redirect to the phished page
+        window.location.href = 'phished.html';
+      } else {
+        alert('Please enter username and password.');
+      }
+    });
+  </script>
 </body>
 </html>
