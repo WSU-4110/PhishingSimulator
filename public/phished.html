@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>You’ve Been Phished!</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+
+  <!-- External styles (your global styles) -->
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+
+    .phished-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+      text-align: center;
+      background: linear-gradient(to bottom right, #ffffff, #e0f7f4);
+    }
+
+    .phished-title {
+      font-size: 36px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .phished-info {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 30px;
+      max-width: 700px;
+    }
+
+    .phished-info ul {
+      text-align: left;
+      margin: 0 auto;
+      padding-left: 20px;
+    }
+
+    .phished-info li {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .btn {
+        background: #38d39f;
+        color: #fff;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 25px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 500;
+        transition: background 0.3s ease;
+        display: inline-block; /* Makes the button only as wide as its content */
+        text-align: center;     /* Ensures text is centered inside the button */
+}
+
+    
+
+    .btn:hover {
+      background: #32c48d;
+    }
+  </style>
+</head>
+<body>
+  <div class="phished-container">
+    <h1 class="phished-title">Oops! You could have been phished!</h1>
+    <div class="phished-info">
+      <p>Here’s what you missed and how to stay safe:<br><br></p>
+      <ul>
+        <li>Watch out for suspicious emails asking for your credentials.</li>
+        <li>Never click links without verifying the sender.</li>
+        <li>Be cautious with login pages that look unusual.</li>
+        <li>Always verify URLs and never share passwords.</li>
+      </ul>
+    </div>
+    <a href="videos.html" class="btn">Start Training Modules</a>
+
+  </div>
+</body>
+</html>
