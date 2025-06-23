@@ -114,23 +114,7 @@
     <button class="complete-btn">Mark as Complete</button>
   </div>
 
-  <script>
-    const tabs = document.querySelectorAll('.tab');
-    const modules = document.querySelectorAll('.module');
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const target = tab.getAttribute('data-tab');
-
-        // Remove active classes
-        tabs.forEach(t => t.classList.remove('active'));
-        modules.forEach(m => m.classList.remove('active'));
-
-        // Add active classes to clicked tab and corresponding module
-        tab.classList.add('active');
-        document.querySelector(`.module[data-content="${target}"]`).classList.add('active');
-      });
-    });
-  </script>
+  <!-- External JS file -->
+  <script src="./scripts/tabs.js"></script>
 </body>
 </html>
