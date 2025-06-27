@@ -35,3 +35,50 @@ app.post('/api/track-phish', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 
+const EmailTemplateFactory = require('./emailTemplates/EmailTemplateFactory');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "optihragency@gmail.com",
+    pass: "squm lmvp ltqc hyks",
+  },
+});
+
+app.post("/send-email", (req, res) => {
+  const { template, recipients, customMessage, displayName, spoofedEmail } = req.body;
+
+  let emailContent;
+  try {
+    emailContent = template === "Custom"
+      ? {
+          subject: "Custom Message",
+          plainText: customMessage,
+          html: `<p>${customMessage}</p>`
+        }
+      : EmailTemplateFactory.createTemplate(template);
+  } catch (err) {
+    return res.status(400).json({ success: false, error: "Invalid template" });
+  }
+
+  const mailOptions = {
+    from: `${displayName} <${spoofedEmail}>`,
+    to: recipients,
+    subject: emailContent.subject,
+    text: emailContent.plainText,
+    html: emailContent.html
+  };
+
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error("Email error:", err);
+      return res.status(500).json({ success: false });
+    }
+    console.log("Sent:", info.response);
+    res.json({ success: true });
+  });
+});
+
+
+

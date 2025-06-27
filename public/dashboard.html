@@ -3,13 +3,368 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f9f9f9;
+      padding: 30px;
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      color: #2c3e50;
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 16px;
+      color: #555;
+    }
+
+    .tabs {
+      border-bottom: 2px solid #2980b9;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: #e1e8f0;
+      border-radius: 20px 20px 0 0;
+      color: #2980b9;
+      font-weight: 600;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .tab:hover {
+      background: #d0d9e7;
+    }
+
+    .tab.active {
+      background: #2980b9;
+      color: white;
+      font-weight: 700;
+    }
+
+    .module {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    .module.active {
+      display: block;
+    }
+
+    textarea, select, input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #38d39f;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #32c48d;
+    }
+
+    .email-preview {
+      background: #f1f1f1;
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+
+/* Style for the template select */
+.styled-select {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1.5px solid #2980b9;
+  background: white;
+  color: #2980b9;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.styled-select:hover,
+.styled-select:focus {
+  border-color: #1f5d90;
+}
+
+/* Recipients list container */
+.recipients-list {
+  max-height: 140px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  background: white;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Custom checkbox styling */
+.recipients-list label {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+  gap: 10px;
+  position: relative;
+}
+
+/* Hide default checkbox */
+.recipients-list input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #2980b9;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Checked state */
+.recipients-list input[type="checkbox"]:checked {
+  background-color: #2980b9;
+  border-color: #2980b9;
+}
+
+/* Checkmark */
+.recipients-list input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 7px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+
+/* Add email input */
+.add-email-container {
+  margin-top: 10px;
+}
+
+#newEmailInput {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+#newEmailInput:focus {
+  border-color: #2980b9;
+}
+
+/* Shared style for inputs */
+.styled-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.styled-input:focus {
+  border-color: #2980b9;
+}
+
+
+  </style>
 </head>
 <body>
-  <h1>Admin Dashboard</h1>
-  <ul>
-    <li><a href="#">Manage Users</a></li>
-    <li><a href="#">View Reports</a></li>
-    <li><a href="#">Site Settings</a></li>
-  </ul>
+  <header>
+    <h1>Phishing Simulator</h1>
+    <p>Welcome to the Admin Dashboard. Use the simulator to send fake phishing emails to employees and track their awareness training progress.</p>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="1">Simulator</div>
+    <div class="tab" data-tab="2">Manage Users</div>
+    <div class="tab" data-tab="3">Campaign Analytics</div>
+  </div>
+
+  <div class="module active" data-content="1">
+    <h2>Send Phishing Simulation</h2>
+    <label for="template">Choose Template:</label>
+      <select id="template" class="styled-select">
+        <option value="DocShare">Document Share</option>
+        <option value="PasswordReset">Password Reset</option>
+        <option value="PayStub">Pay Stub</option>
+        <option value="Custom">Custom</option>
+      </select>
+
+    <div id="customMessageArea" style="display:none">
+      <label for="customMessage">Custom Message:</label>
+      <textarea id="customMessage" rows="4"></textarea>
+    </div>
+
+    <div class="email-preview" id="preview">
+      <h3>Email Preview</h3>
+      <p><strong>Subject:</strong> <span id="preview-subject">Your Latest Pay Stub is Ready</span></p>
+      <p><strong>Body:</strong></p>
+      <div id="preview-body"><p>Your pay stub is now available. <a href="#">View Pay Stub</a></p></div>
+    </div>
+    
+  <label>Recipients:</label>
+  <div id="recipientsList" class="recipients-list">
+    <!-- Initial emails as checkboxes -->
+    <label><input type="checkbox" value="tvthomas1@wayne.edu" /> TaSain Thomas</label>
+    <label><input type="checkbox" value="hh9241@wayne.edu" /> Andrea Aguirre</label>
+    <label><input type="checkbox" value="hj8382@wayne.edu" /> Taslima Khanom</label>
+    <label><input type="checkbox" value="samayyahcook@wayne.edu" /> Samayyah Cook</label>
+  </div>
+
+<div class="add-email-container">
+  <input type="text" id="newEmailInput" placeholder="Add new email and press Enter" />
+  <div id="newEmailError" style="color: red; font-size: 13px; display:none; margin-top: 5px;">Invalid email format.</div>
+</div>
+
+    <!-- New sender spoofing inputs -->
+  <label for="displayName">Sender Name:</label>
+  <input type="text" id="displayName" placeholder="e.g., HR Department" class="styled-input" />
+
+  <label for="spoofedEmail">Sender Email:</label>
+  <input type="text" id="spoofedEmail" placeholder="e.g., hr@company-support.com" class="styled-input" />
+
+    <button id="sendBtn">Send Email</button>
+
+  </div>
+
+  <div class="module" data-content="2">
+    <h2>Manage Users</h2>
+    <p>Coming soon: View, add, and manage employees here.</p>
+  </div>
+
+  <div class="module" data-content="3">
+    <h2>Campaign Analytics</h2>
+    <p>Coming soon: View who opened, clicked, and responded to phishing tests.</p>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const modules = document.querySelectorAll('.module');
+    const templateSelect = document.getElementById("template");
+    const previewSubject = document.getElementById("preview-subject");
+    const previewBody = document.getElementById("preview-body");
+    const customMessageArea = document.getElementById("customMessageArea");
+
+    const previews = {
+      "DocShare": {
+        subject: "New Document Shared With You",
+        html: "<p>You received a secure document. <a href='#'>View Document</a></p>"
+      },
+      "PasswordReset": {
+        subject: "Action Required: Password Reset Request",
+        html: "<p>Your account needs a password reset. <a href='#'>Reset Now</a></p>"
+      },
+      "PayStub": {
+        subject: "Your Latest Pay Stub is Ready",
+        html: "<p>Your pay stub is now available. <a href='#'>View Pay Stub</a></p>"
+      },
+      "Custom": {
+        subject: "Custom Message",
+        html: "<p>(Write your own content above)</p>"
+      }
+    };
+
+    templateSelect.addEventListener("change", () => {
+      const selected = templateSelect.value;
+      if (selected === "Custom") {
+        customMessageArea.style.display = "block";
+      } else {
+        customMessageArea.style.display = "none";
+      }
+      previewSubject.innerText = previews[selected].subject;
+      previewBody.innerHTML = previews[selected].html;
+    });
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-tab');
+        tabs.forEach(t => t.classList.remove('active'));
+        modules.forEach(m => m.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelector(`.module[data-content="${target}"]`).classList.add('active');
+      });
+    });
+
+document.getElementById("sendBtn").addEventListener("click", () => {
+  const template = document.getElementById("template").value;
+  const recipients = Array.from(document.getElementById("recipients").selectedOptions).map(opt => opt.value);
+  const customMessage = document.getElementById("customMessage").value;
+  const displayName = document.getElementById("displayName").value || "OptiHR Security";
+  const spoofedEmail = document.getElementById("spoofedEmail").value || "optihragency@gmail.com";
+
+  fetch("/send-email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      template,
+      recipients,
+      customMessage,
+      displayName,
+      spoofedEmail
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.success ? "Emails sent!" : "Failed to send.");
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Error sending email.");
+  });
+});
+
+
+  </script>
 </body>
 </html>
