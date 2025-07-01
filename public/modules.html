@@ -16,7 +16,6 @@
       margin-bottom: 20px;
     }
 
-    /* Tab container */
     .tabs {
       border-bottom: 2px solid #2980b9;
       display: flex;
@@ -25,7 +24,6 @@
       cursor: pointer;
     }
 
-    /* Individual tabs */
     .tab {
       padding: 10px 20px;
       background: #e1e8f0;
@@ -40,14 +38,17 @@
       background: #d0d9e7;
     }
 
-    /* Active tab */
     .tab.active {
       background: #2980b9;
       color: white;
       font-weight: 700;
     }
-
-    /* Module content (only active one shown) */
+  .tab.disabled-tab {
+  pointer-events: none;
+  background: #ccc;
+  color: #888;
+  cursor: not-allowed;
+}
     .module {
       background: #ffffff;
       border-radius: 10px;
@@ -71,24 +72,18 @@
       display: inline-block;
       margin-top: 10px;
       padding: 10px 20px;
-      background-color: #38d39f;
-      color: white;
+      background-color: #ccc;
+      color: #666;
       border: none;
       border-radius: 20px;
       text-decoration: none;
-      cursor: pointer;
+      cursor: not-allowed;
     }
 
-     .complete-btn:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-  color: #666;
-}
-
-.complete-btn:enabled {
-  background-color: #38d39f;
-  color: white;
-}
+    .complete-btn:enabled {
+      background-color: #38d39f;
+      color: white;
+      cursor: pointer;
     }
 
   </style>
