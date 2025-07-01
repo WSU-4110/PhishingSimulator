@@ -154,11 +154,23 @@
   <button class="complete-btn" data-btn="3" disabled>Mark as Complete</button>
 </div>
 
-<div class ="module" data-content="4">
+<!-- MODULE 4 -->
+<div class="module" data-content="4">
   <h2>Module 4: Smishing</h2>
-  <p>Understanding what smishing is and what to look out for to identify suspicious text messages</p>
+  <p>Understanding what smishing is and how to spot suspicious text messages.</p>
   <iframe src="https://www.youtube.com/embed/oK0KwS8N108?si=psHpLyEXIKmPFee8" title="Text Message Phishing"></iframe>
-  <button class="complete-btn">Mark as Complete</button>
+
+  <div class="quiz">
+    <h3>Quick Quiz</h3>
+    <p><strong>4. What is a warning sign that a text message might be a smishing attempt?</strong></p>
+    <label><input type="radio" name="q4" value="a">It comes from a known contact</label><br>
+    <label><input type="radio" name="q4" value="b">It contains spelling mistakes and asks you to click a suspicious link</label><br>
+    <label><input type="radio" name="q4" value="c">It thanks you for your recent payment</label><br>
+    <button class="quiz-submit" data-question="4" data-correct="b">Submit Answer</button>
+    <p id="feedback4"></p>
+  </div>
+
+  <button class="complete-btn" data-btn="4" disabled>Mark as Complete</button>
 </div>
 
 <script>
