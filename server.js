@@ -2,7 +2,47 @@ const express = require('express');
 const app = express();
 const fs = require('fs');
 const path = require('path');
+const trackingFile = "./tracking.json";
+
+
 //must add data for video storage so that the videos are private and secure
+app.get("/track/open", (req, res) => {
+  const token = req.query.token;
+
+  if (!token) {
+    return res.status(400).send("Missing token");
+  }
+
+  if (!fs.existsSync(trackingFile)) {
+    return res.status(404).send("Tracking file not found");
+  }
+
+  let trackingData = {};
+  try {
+    trackingData = JSON.parse(fs.readFileSync(trackingFile, "utf8"));
+  } catch (err) {
+    console.error("Error reading tracking.json:", err);
+    return res.sendStatus(500);
+  }
+
+  if (trackingData[token]) {
+    trackingData[token].opened = true;
+    trackingData[token].openedAt = new Date().toISOString();
+    fs.writeFileSync(trackingFile, JSON.stringify(trackingData, null, 2));
+    console.log(`Email opened by: ${trackingData[token].email}`);
+  }
+
+  // Transparent 1x1 pixel image
+  const pixel = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AApgB9ENeZF8AAAAASUVORK5CYII=",
+    "base64"
+  );
+  res.writeHead(200, {
+    "Content-Type": "image/png",
+    "Content-Length": pixel.length,
+  });
+  res.end(pixel);
+});
 
 app.use(express.json());
 app.use(express.static('public')); // Serve static files
