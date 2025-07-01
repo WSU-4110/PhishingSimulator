@@ -94,12 +94,22 @@
     <div class = "tab" data-tab="4">Text Message Phishing</div>
   </div>
 
-  <div class="module active" data-content="1">
-    <h2>Module 1: Recognizing Phishing Attacks</h2>
-    <p>Understand how phishing works and how to identify suspicious emails.</p>
-    <iframe <iframe src="https://www.youtube.com/embed/Gcpe0F1dHaM?si=dnzvkF0rO21pEGfc" title="Recognizing Phishing Emails"></iframe>
-    <button class="complete-btn">Mark as Complete</button>
+<div class="module active" data-content="1">
+  <h2>Module 1: Recognizing Phishing Attacks</h2>
+  <p>Understand how phishing works and how to identify suspicious emails.</p>
+  <iframe <iframe src="https://www.youtube.com/embed/Gcpe0F1dHaM?si=dnzvkF0rO21pEGfc" title="Recognizing Phishing Emails"></iframe>
+  <div class="quiz">
+    <h3>Quick Quiz</h3>
+    <p><strong>1. What is a common sign of a phishing email?</strong></p>
+    <label><input type="radio" name="q1" value="a" /> A friendly greeting</label><br />
+    <label><input type="radio" name="q1" value="b" /> A request for urgent action or personal info</label><br />
+    <label><input type="radio" name="q1" value="c" /> A newsletter subscription</label><br />
+
+    <button onclick="checkAnswer(1, 'b')">Submit Answer</button>
+    <p id="feedback1"></p>
   </div>
+  <button class="complete-btn">Mark as Complete</button>
+</div>
 
   <div class="module" data-content="2">
     <h2>Module 2: Being phished via phones calls</h2>
@@ -139,6 +149,40 @@
         document.querySelector(`.module[data-content="${target}"]`).classList.add('active');
       });
     });
+
+        // Quiz logic starts here
+  function checkAnswer(questionNum, correctAnswer) {
+    const selected = document.querySelector(`input[name="q${questionNum}"]:checked`);
+    const feedback = document.getElementById(`feedback${questionNum}`);
+    const completeBtn = document.querySelector(`.complete-btn[data-btn="${questionNum}"]`);
+
+    if (!selected) {
+      feedback.innerText = "Please select an answer.";
+      feedback.style.color = "orange";
+      return;
+    }
+
+    if (selected.value === correctAnswer) {
+      feedback.innerText = "Correct! ✅";
+      feedback.style.color = "green";
+      selected.disabled = true;
+      document.querySelectorAll(`input[name="q${questionNum}"]`).forEach(input => input.disabled = true);
+      document.querySelector(`.quiz-submit[data-question="${questionNum}"]`).disabled = true;
+      completeBtn.disabled = false;
+    } else {
+      feedback.innerText = "Incorrect. ❌ Please try again.";
+      feedback.style.color = "red";
+    }
+  }
+
+  document.querySelectorAll('.quiz-submit').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const questionNum = btn.getAttribute('data-question');
+      const correct = btn.getAttribute('data-correct');
+      checkAnswer(questionNum, correct);
+    });
+  });
+    
   </script>
 </body>
 </html>
