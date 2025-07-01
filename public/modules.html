@@ -138,49 +138,70 @@
 </div>
 
 <script>
-  const tabs = document.querySelectorAll('.tab');
-const modules = document.querySelectorAll('.module');
+    const tabs = document.querySelectorAll('.tab');
+    const modules = document.querySelectorAll('.module');
+    const completionPage = document.getElementById('completion');
+    let completedModules = 0;
 
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    const target = tab.getAttribute('data-tab');
-    tabs.forEach(t => t.classList.remove('active'));
-    modules.forEach(m => m.classList.remove('active'));
-    tab.classList.add('active');
-    document.querySelector(`.module[data-content="${target}"]`).classList.add('active');
-  });
-});
+    // Tab click handling
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-tab');
+        tabs.forEach(t => t.classList.remove('active'));
+        modules.forEach(m => m.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelector(`.module[data-content="${target}"]`).classList.add('active');
+      });
+    });
 
-function checkAnswer(questionNum, correctAnswer) {
-  const selected = document.querySelector(`input[name="q${questionNum}"]:checked`);
-  const feedback = document.getElementById(`feedback${questionNum}`);
-  const completeBtn = document.querySelector(`.complete-btn[data-btn="${questionNum}"]`);
+    // Quiz answer checking
+    function checkAnswer(questionNum, correctAnswer) {
+      const selected = document.querySelector(`input[name="q${questionNum}"]:checked`);
+      const feedback = document.getElementById(`feedback${questionNum}`);
+      const completeBtn = document.querySelector(`.complete-btn[data-btn="${questionNum}"]`);
 
-  if (!selected) {
-    feedback.innerText = "Please select an answer.";
-    feedback.style.color = "orange";
-    return;
-  }
+      if (!selected) {
+        feedback.innerText = "Please select an answer.";
+        feedback.style.color = "orange";
+        return;
+      }
 
-  if (selected.value === correctAnswer) {
-    feedback.innerText = "Correct! ✅";
-    feedback.style.color = "green";
+      if (selected.value === correctAnswer) {
+        feedback.innerText = "Correct! ✅";
+        feedback.style.color = "green";
 
-    document.querySelectorAll(`input[name="q${questionNum}"]`).forEach(input => input.disabled = true);
-    completeBtn.disabled = false;
-  } else {
-    feedback.innerText = "Incorrect. ❌ Please try again.";
-    feedback.style.color = "red";
-  }
-}
+        // Disable answer choices
+        document.querySelectorAll(`input[name="q${questionNum}"]`).forEach(input => input.disabled = true);
+        completeBtn.disabled = false;
 
-document.querySelectorAll('.quiz-submit').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const questionNum = btn.getAttribute('data-question');
-    const correct = btn.getAttribute('data-correct');
-    checkAnswer(questionNum, correct);
-  });
-});
+        // Unlock next tab & check for final completion
+        completeBtn.addEventListener('click', () => {
+          const nextTab = document.querySelector(`.tab[data-tab="${parseInt(questionNum) + 1}"]`);
+          if (nextTab) {
+            nextTab.classList.remove('disabled-tab');
+            nextTab.click();
+          }
+
+          completedModules++;
+          if (completedModules === 4) {
+            showCompletionPage();
+          }
+        });
+
+      } else {
+        feedback.innerText = "Incorrect. ❌ Please try again.";
+        feedback.style.color = "red";
+      }
+    }
+
+    // Wire up submit buttons
+    document.querySelectorAll('.quiz-submit').forEach(button => {
+      button.addEventListener('click', () => {
+        const questionNum = button.getAttribute('data-question');
+        const correctAnswer = button.getAttribute('data-correct');
+        checkAnswer(questionNum, correctAnswer);
+      });
+    });
 
 </script>
 </body>
