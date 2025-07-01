@@ -85,35 +85,37 @@
       color: white;
       cursor: pointer;
     }
-
   </style>
 </head>
 <body>
+
 <h1>Mandatory Security Awareness Training</h1>
 
 <div class="tabs">
   <div class="tab active" data-tab="1">Recognizing Phishing</div>
-  <div class="tab" data-tab="2">Voice Phishing</div>
-  <div class="tab" data-tab="3">Safe Browsing</div>
-  <div class = "tab" data-tab="4">Text Message Phishing</div>
+  <div class="tab disabled-tab" data-tab="2">Voice Phishing</div>
+  <div class="tab disabled-tab" data-tab="3">Safe Browsing</div>
+  <div class="tab disabled-tab" data-tab="4">Text Message Phishing</div>
 </div>
 
+
+<!-- MODULE 1 -->
 <div class="module active" data-content="1">
   <h2>Module 1: Recognizing Phishing Attacks</h2>
   <p>Understand how phishing works and how to identify suspicious emails.</p>
-  <iframe <iframe src="https://www.youtube.com/embed/Gcpe0F1dHaM?si=dnzvkF0rO21pEGfc" title="Recognizing Phishing Emails"></iframe>
+  <iframe src="https://www.youtube.com/embed/Gcpe0F1dHaM?si=dnzvkF0rO21pEGfc" title="Recognizing Phishing Emails"></iframe>
+
   <div class="quiz">
     <h3>Quick Quiz</h3>
     <p><strong>1. What is a common sign of a phishing email?</strong></p>
-    <label><input type="radio" name="q1" value="a" /> A friendly greeting</label><br />
-    <label><input type="radio" name="q1" value="b" /> A request for urgent action or personal info</label><br />
-    <label><input type="radio" name="q1" value="c" /> A newsletter subscription</label><br />
-
+    <label><input type="radio" name="q1" value="a"> A friendly greeting</label><br>
+    <label><input type="radio" name="q1" value="b"> A request for urgent action or personal info</label><br>
+    <label><input type="radio" name="q1" value="c"> A newsletter subscription</label><br>
     <button class="quiz-submit" data-question="1" data-correct="b">Submit Answer</button>
     <p id="feedback1"></p>
   </div>
-  <button class="complete-btn" data-btn="1" disabled>Mark as Complete</button>
 
+  <button class="complete-btn" data-btn="1" disabled>Mark as Complete</button>
 </div>
 
 <!-- MODULE 2 -->
@@ -162,17 +164,18 @@
 
   <div class="quiz">
     <h3>Quick Quiz</h3>
-    <p><strong>4. What is a warning sign that a text message might be a smishing attempt?</strong></p>
-    <label><input type="radio" name="q4" value="a">It comes from a known contact</label><br>
-    <label><input type="radio" name="q4" value="b">It contains spelling mistakes and asks you to click a suspicious link</label><br>
-    <label><input type="radio" name="q4" value="c">It thanks you for your recent payment</label><br>
+    <p><strong>4. What is “smishing”?</strong></p>
+    <label><input type="radio" name="q4" value="a"> Phishing by email</label><br>
+    <label><input type="radio" name="q4" value="b"> Phishing through SMS or text messages</label><br>
+    <label><input type="radio" name="q4" value="c"> A secure message</label><br>
     <button class="quiz-submit" data-question="4" data-correct="b">Submit Answer</button>
     <p id="feedback4"></p>
   </div>
 
   <button class="complete-btn" data-btn="4" disabled>Mark as Complete</button>
 </div>
-  <!-- COMPLETION PAGE -->
+
+<!-- COMPLETION PAGE -->
 <div id="completion" style="display:none; text-align:center; padding: 40px;">
   <h2>🎉 All Modules Complete!</h2>
   <p>You've successfully completed the Security Awareness Training.</p>
@@ -252,6 +255,13 @@
       });
     });
 
+    // Show completion page
+    function showCompletionPage() {
+      document.querySelector('.tabs').style.display = 'none';
+      modules.forEach(m => m.style.display = 'none');
+      completionPage.style.display = 'block';
+    }
 </script>
+
 </body>
 </html>
