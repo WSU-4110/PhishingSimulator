@@ -48,22 +48,6 @@ body {
   object-fit: contain;
 }
 
-/* Sign up link under the image */
-.signup-link {
-  margin-top: 20px;
-  font-size: 14px;
-  text-align: center;
-}
-
-.signup-link a {
-  color: #38d39f;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.signup-link a:hover {
-  text-decoration: underline;
-}
 
 /* Right side form */
 .login-content {
@@ -139,7 +123,9 @@ a:hover {
 
 /* Login button */
 .btn {
+  display: inline-block;
   width: 100%;
+  text-align: center;
   background: #38d39f;
   border: none;
   padding: 10px;
@@ -152,4 +138,30 @@ a:hover {
 
 .btn:hover {
   background: #32c48d;
+}
+
+/* Header for logo and name */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 8px 40px;
+  background-color: #f2f2f2;
+  position: relative;
+  width: 100%;
+}
+
+/* Logo image */
+.logo {
+  height: 100px;
+  width: 100px;
+  object-fit: cover;
+  margin-right: 15px; 
+}
+
+/* Company name next to logo */
+.company-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
 }
