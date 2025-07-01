@@ -336,11 +336,18 @@
 
 document.getElementById("sendBtn").addEventListener("click", () => {
   const template = document.getElementById("template").value;
-  const recipients = Array.from(document.getElementById("recipients").selectedOptions).map(opt => opt.value);
+
+  const recipientCheckboxes = document.querySelectorAll('#recipientsList input[type="checkbox"]:checked');
+  const recipients = Array.from(recipientCheckboxes).map(cb => cb.value);
+
   const customMessage = document.getElementById("customMessage").value;
   const displayName = document.getElementById("displayName").value || "OptiHR Security";
   const spoofedEmail = document.getElementById("spoofedEmail").value || "optihragency@gmail.com";
 
+  if (recipients.length === 0) {
+    alert("Please select at least one recipient.");
+    return;
+  }
   fetch("/send-email", {
     method: "POST",
     headers: {
