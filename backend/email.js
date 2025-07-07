@@ -7,12 +7,12 @@ const EmailTemplateFactory = require("./emailTemplates/EmailTemplateFactory");
 
 // Select which phishing email template to use
 const selectedTemplate = "DocShare"; // You can change to "PasswordReset" or "PayStub"
-const customsubjectLine = "Important Document sent by HR for Review"; //Added custom subject line. All of these updates will be updated for usability.
+const customSubject = "Important Document sent by HR for Review"; //Added custom subject line. All of these updates will be updated for usability.
 const defaultLink = "https://givemeyourmoney.edu/doc"; //Added custom link. All of these updates will be updated for usability.
 
 const emailContent = EmailTemplateFactory.createTemplate(selectedTemplate, { //Implemented some email content. All of these updates will be updated for usability.
-  link: defaultLink;
-  subject: customSubject;
+  link: defaultLink,
+  subject: customSubject,
 });
 
 const transporter = nodemailer.createTransport({
