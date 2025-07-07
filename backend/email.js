@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
 
 // Generate unique token
 const token = crypto.randomUUID();
-const recipientEmail = "employee@example.com"; // Replace as needed
+const recipientEmail = "employee@example.com"; // Allow for usability. Will add changes to this parameter
 
 // Save token + recipient
 let trackingData = {};
