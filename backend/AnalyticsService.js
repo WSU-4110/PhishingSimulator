@@ -3,7 +3,7 @@ const path = require("path"); //file path
 
 class AnalyticsService {
   getUserInteractionStats() {
-    const trackingPath = path.join(_dirname, "package.json"); //or this may be a different tracking path.
+    const trackingPath = path.join(_dirname, "tracking.json"); 
     const phishingPath = path.join(_dirname, "data", "phishAttempts.json");
 
     let trackingData = {}; 
