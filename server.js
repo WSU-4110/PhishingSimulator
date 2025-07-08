@@ -7,25 +7,9 @@ const path = require('path');
 const trackingFile = "./tracking.json";
 const EmailTemplateFactory = require('./emailTemplates/EmailTemplateFactory');
 const nodemailer = require('nodemailer');
-const fs = require("fs");
 const crypto = require("crypto");
-const trackingFile = "./tracking.json";
-const token = crypto.randomUUID();
-const trackingPixel = `<img src="http://localhost:3000/track/open?token=${token}" width="1" height="1" style="display:none;" />`;
-const htmlWithTracking = emailContent.html + trackingPixel;
+const { AdminDashboard, AnalyticsService, FetchInteractionAnalyticsCommand } = require('./backend/AnalyticsCommand'); // adjust path as needed
 
-let trackingData = {}; //List of people with credentials that have opened. Multiple recipients as wlel.
-
-if (fs.existsSync(trackingFile)) {
-  trackingData = JSON.parse(fs.readFileSync(trackingFile, "utf8"));
-}
-trackingData[token] = { //Trackingdata
-  email: recipients
-  opened: false,
-  openedAt: null,
-};
-
-fs.writeFileSync(trackingFile, JSON.stringify(trackingData, null, 2)); //Prepares file
 
 
 app.get("/api/analytics", (req, res) => { //API for frontend to request analytics data and insert in data table.
@@ -35,7 +19,7 @@ app.get("/api/analytics", (req, res) => { //API for frontend to request analytic
 
   const stats = dashboard.runCommand(command);
   res.json({ success: true, data: stats});
-}
+});
 
 app.get("/track/open", (req, res) => { //API for frontend to track the 1x1 Pixel in Emails and if it's been opened or not. 
   const token = req.query.token;
@@ -126,7 +110,22 @@ app.post("/send-email", (req, res) => { //Post to send email.
   } catch (err) {
     return res.status(400).json({ success: false, error: "Invalid template" });
   }
+  
+const token = crypto.randomUUID();
+const trackingPixel = `<img src="http://localhost:3000/track/open?token=${token}" width="1" height="1" style="display:none;" />`;
+const htmlWithTracking = emailContent.html + trackingPixel;
+  
+let trackingData = {}; //List of people with credentials that have opened. Multiple recipients as wlel.
 
+if (fs.existsSync(trackingFile)) {
+  trackingData = JSON.parse(fs.readFileSync(trackingFile, "utf8"));
+}
+trackingData[token] = { //Trackingdata
+  email: recipients,
+  opened: false,
+  openedAt: null,
+};
+fs.writeFileSync(trackingFile, JSON.stringify(trackingData, null, 2)); //Prepares file
   
   const mailOptions = {
     from: `${displayName} <${spoofedEmail}>`,
