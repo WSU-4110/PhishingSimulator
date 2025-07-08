@@ -84,6 +84,29 @@ app.post('/api/track-phish', (req, res) => { // Post the phishing attempts.
   res.json({ success: true });
 });
 
+app.post('/api/add-user'. (req,res) => { //Add user portion
+  const { name, email, role } = req.body;
+
+  if (!name || !email) { //If no name or No email
+    return res.status(400).json({success: false, message: "Name and Email Address Required"})
+  }
+
+  const userFile = path.join(__dirname, "data", "users.json"); ; //This will be pulling from some users DB or .json file
+  let users = [];
+  if (fs.existsSync(userFile)) {
+    users = JSON.parse(fs.readFileSync(userFile,"utf-8"));
+  }
+
+  if (users.find(users => user.email === email)) {
+    return res.status(400).json({success: false, message: "User already exists"})
+  }
+
+  users.push({name, email, role: role || "Unknown"});
+  fs.writeFileSync(userFile. JSON.stringify(users,null,2));
+  res.json({success: true, message: "User added successfully!"});
+};
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 
