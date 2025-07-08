@@ -1,4 +1,4 @@
-//This file allows people to access data with simple clicks and things like that.
+//This file allows people to access data with simple clicks and things like that. Handles everything we've made and either posts it or gets the data and returns it someway. 
 
 const express = require('express');
 const app = express();
