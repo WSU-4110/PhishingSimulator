@@ -8,7 +8,8 @@ const trackingFile = "./tracking.json";
 const EmailTemplateFactory = require('./emailTemplates/EmailTemplateFactory');
 const nodemailer = require('nodemailer');
 const crypto = require("crypto");
-const { AdminDashboard, AnalyticsService, FetchInteractionAnalyticsCommand } = require('./backend/AnalyticsCommand'); // adjust path as needed
+const { AdminDashboard, FetchInteractionAnalyticsCommand } = require('./backend/AnalyticsCommand'); // adjust path as needed
+const AnalyticsService = require('./backend/AnalyticsService');
 
 
 
