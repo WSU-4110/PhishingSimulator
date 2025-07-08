@@ -1,3 +1,4 @@
+//Fetches the command design pattern data and returns it in some form. This is for Dashboard and User Interface.
 const fs = require("fs"); //required file system
 const path = require("path"); //file path
 
@@ -32,4 +33,4 @@ class AnalyticsService {
   }
 }
 
-module.exports = AnalyticsService;
+module.exports = AnalyticsService; //exports this for frontend
