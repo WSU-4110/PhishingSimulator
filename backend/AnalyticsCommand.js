@@ -1,4 +1,4 @@
-//AnalyticsCommand
+//AnalyticsCommand. Implements Command design pattern. Scalable for more admin controls/actions.
 
 const AnalyticsService = require("./AnalyticsService");
 
