@@ -1,3 +1,5 @@
+//This file allows people to access data with simple clicks and things like that.
+
 const express = require('express');
 const app = express();
 const fs = require('fs');
@@ -5,9 +7,26 @@ const path = require('path');
 const trackingFile = "./tracking.json";
 const EmailTemplateFactory = require('./emailTemplates/EmailTemplateFactory');
 const nodemailer = require('nodemailer');
+const fs = require("fs");
+const crypto = require("crypto");
+const trackingFile = "./tracking.json";
+const token = crypto.randomUUID();
+const trackingPixel = `<img src="http://localhost:3000/track/open?token=${token}" width="1" height="1" style="display:none;" />`;
+const htmlWithTracking = emailContent.html + trackingPixel;
 
+let trackingData = {}; //List of people with credentials that have opened. Multiple recipients as wlel.
 
-//must add data for video storage so that the videos are private and secure
+if (fs.existsSync(trackingFile)) {
+  trackingData = JSON.parse(fs.readFileSync(trackingFile, "utf8"));
+}
+trackingData[token] = { //Trackingdata
+  email: recipients
+  opened: false,
+  openedAt: null,
+};
+
+fs.writeFileSync(trackingFile, JSON.stringify(trackingData, null, 2)); //Prepares file
+
 
 app.get("/api/analytics", (req, res) => { //API for frontend to request analytics data and insert in data table.
   const dashboard = new AdminDashboard();
@@ -58,8 +77,8 @@ app.get("/track/open", (req, res) => { //API for frontend to track the 1x1 Pixel
 app.use(express.json());
 app.use(express.static('public')); // Serve static files
 
-//for modules 
-app.get('/modules.html', (req, res) => {
+
+app.get('/modules.html', (req, res) => { //for modules 
   res.sendFile(path.join(__dirname, 'public', 'modules.html'));
 });
 
@@ -108,12 +127,13 @@ app.post("/send-email", (req, res) => { //Post to send email.
     return res.status(400).json({ success: false, error: "Invalid template" });
   }
 
+  
   const mailOptions = {
     from: `${displayName} <${spoofedEmail}>`,
     to: recipients,
     subject: emailContent.subject,
     text: emailContent.plainText,
-    html: emailContent.html
+    html: htmlWithTracking 
   };
 
   transporter.sendMail(mailOptions, (err, info) => {
