@@ -3,10 +3,22 @@ const app = express();
 const fs = require('fs');
 const path = require('path');
 const trackingFile = "./tracking.json";
+const EmailTemplateFactory = require('./emailTemplates/EmailTemplateFactory');
+const nodemailer = require('nodemailer');
 
 
 //must add data for video storage so that the videos are private and secure
-app.get("/track/open", (req, res) => {
+
+app.get("/api/analytics", (req, res) => { //API for frontend to request analytics data and insert in data table.
+  const dashboard = new AdminDashboard();
+  const analyticsService = new AnalyticsService();
+  const command = new FetchInteractionAnalyticsCommand(analyticsService);
+
+  const stats = dashboard.runCommand(command);
+  res.json({ success: true, data: stats});
+}
+
+app.get("/track/open", (req, res) => { //API for frontend to track the 1x1 Pixel in Emails and if it's been opened or not. 
   const token = req.query.token;
 
   if (!token) {
@@ -32,8 +44,7 @@ app.get("/track/open", (req, res) => {
     console.log(`Email opened by: ${trackingData[token].email}`);
   }
 
-  // Transparent 1x1 pixel image
-  const pixel = Buffer.from(
+  const pixel = Buffer.from(   // Transparent 1x1 pixel image
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AApgB9ENeZF8AAAAASUVORK5CYII=",
     "base64"
   );
@@ -52,15 +63,12 @@ app.get('/modules.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'modules.html'));
 });
 
-// Endpoint to track phishing attempts
-app.post('/api/track-phish', (req, res) => {
+app.post('/api/track-phish', (req, res) => { // Post the phishing attempts.
   const { username, timestamp } = req.body;
 
-  // Simple logging to a JSON file for demo purposes
-  const dataFile = path.join(__dirname, 'data', 'phishAttempts.json');
+  const dataFile = path.join(__dirname, 'data', 'phishAttempts.json');   
 
-  // Read existing data or initialize array
-  let attempts = [];
+  let attempts = []; 
   if (fs.existsSync(dataFile)) {
     attempts = JSON.parse(fs.readFileSync(dataFile, 'utf-8'));
   }
@@ -75,10 +83,8 @@ app.post('/api/track-phish', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 
-const EmailTemplateFactory = require('./emailTemplates/EmailTemplateFactory');
-const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({ //Use of Node.js transporter.
   service: "gmail",
   auth: {
     user: "optihragency@gmail.com",
@@ -86,7 +92,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-app.post("/send-email", (req, res) => {
+app.post("/send-email", (req, res) => { //Post to send email.
   const { template, recipients, customMessage, displayName, spoofedEmail } = req.body;
 
   let emailContent;
