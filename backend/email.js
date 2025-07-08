@@ -1,4 +1,4 @@
-// email.js
+// Sends email with a tracking 1x1 pixel. implements some template(s). This is solely backend without javascript file. 
 
 const nodemailer = require("nodemailer");
 const fs = require("fs");
