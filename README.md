@@ -1,6 +1,6 @@
 # PhishingSimulator
 
-A phishing simulation tool developed for educational and testing purposes. This project is designed to simulate various phishing email scenarios and track user interactions to raise awareness and improve cybersecurity practices.
+A phishing simulation tool developed using JavaScript, HTML, and CSS. This project helps educate users on cybersecurity threats by simulating realistic phishing emails and tracking interactions.
 
 ## 📁 Project Structure
 
@@ -13,22 +13,18 @@ A phishing simulation tool developed for educational and testing purposes. This 
 ├── package.json # Project metadata and dependencies
 ├── .gitignore # Ignored files and folders
 
-bash
-Copy
-Edit
-
 ## 🚀 Features
 
-- 📨 Send simulated phishing emails (e.g., "DocShare", "PayStub", "PasswordReset")
-- 📊 Admin dashboard for tracking results
-- ✅ Email template factory pattern used for modular design
-- 🛡️ Encourages user training and awareness on phishing threats
+- 📨 Simulate phishing emails like "DocShare", "PasswordReset", and "PayStub"
+- 🧠 Use command pattern for sending emails via `email.js`
+- 📊 Admin dashboard to monitor user engagement and clicks
+- 🛡️ Email tracking and logging for behavior analysis
 
 ## 🛠️ Setup Instructions
 
 ### Prerequisites
-- Node.js (v18 or later recommended)
-- An SMTP email service (e.g., Gmail, Mailtrap, SendGrid)
+- [Node.js](https://nodejs.org/) installed
+- SMTP credentials (e.g., Gmail, Mailtrap)
 
 ### Installation
 ```bash
