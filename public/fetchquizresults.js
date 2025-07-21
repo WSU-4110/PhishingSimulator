@@ -10,3 +10,4 @@ fetch('/api/quiz-results', {
 })
 .then(res => res.text())
 .then(data => alert("Server says: " + data));
+// app.use(express.static('public')); put in a <script> in html? or use fetch
