@@ -1,6 +1,20 @@
 // This file allows people to access data with simple clicks and things like that.
 // Handles everything we've made and either posts it or gets the data and returns it in some way.
 
+const mysql = require('mysql2/promise');
+
+// Create a connection pool for better performance
+const pool = mysql.createPool({
+  host: 'localhost',      // update as needed
+  user: 'root',
+  password: 'SQLPasswordfor2025!',
+  database: 'phishing_platform',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+
+
 const express = require('express');
 const app = express();
 const fs = require('fs');
@@ -154,29 +168,53 @@ app.post('/api/track-phish', (req, res) => {
   res.json({ success: true });
 });
 
-app.post('/api/add-user', (req, res) => {
+app.post('/api/add-user', async (req, res) => {
   const { name, email, role } = req.body;
 
   if (!name || !email) {
     return res.status(400).json({ success: false, message: "Name and Email Address Required" });
   }
 
-  const userFile = path.join(__dirname, "data", "users.json");
-  let users = [];
+  try {
+    // Check if user exists
+    const [rows] = await pool.query('SELECT * FROM Employees WHERE email = ?', [email]);
+    if (rows.length > 0) {
+      return res.status(400).json({ success: false, message: "User already exists" });
+    }
 
-  if (fs.existsSync(userFile)) {
-    users = JSON.parse(fs.readFileSync(userFile, "utf-8"));
+    // Insert user (assuming you want to associate with a company; here just set company_id to 1 or null)
+    await pool.query('INSERT INTO Employees (company_id, name, email) VALUES (?, ?, ?)', [1, name, email]);
+
+    res.json({ success: true, message: "User added successfully!" });
+  } catch (err) {
+    console.error("MySQL error:", err);
+    res.status(500).json({ success: false, message: "Database error" });
   }
-
-  if (users.find(user => user.email === email)) {
-    return res.status(400).json({ success: false, message: "User already exists" });
-  }
-
-  users.push({ name, email, role: role || "Unknown" });
-  fs.writeFileSync(userFile, JSON.stringify(users, null, 2));
-
-  res.json({ success: true, message: "User added successfully!" });
 });
+
+app.get('/api/users', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT id, name, email FROM Employees');
+    res.json(rows);
+  } catch (err) {
+    console.error("MySQL error:", err);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+app.delete('/api/delete-user/:email', async (req, res) => {
+  const email = req.params.email;
+
+  try {
+    await pool.query('DELETE FROM Employees WHERE email = ?', [email]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
+});
+
+
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
