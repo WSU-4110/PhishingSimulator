@@ -6,8 +6,13 @@
     "start": "node server.js"
   },
   "dependencies": {
+<<<<<<< HEAD
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
+=======
+    "express": "^4.21.2",
+    "mysql": "^2.18.1",
+>>>>>>> bfa87eee52fedd8373c3d2d9a180a83becf206ef
     "mysql2": "^3.14.2",
     "nodemailer": "^6.9.1"
   },
