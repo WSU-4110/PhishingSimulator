@@ -15,7 +15,6 @@
       color: #2c3e50;
       margin-bottom: 20px;
     }
-
     .tabs {
       border-bottom: 2px solid #2980b9;
       display: flex;
@@ -23,7 +22,6 @@
       margin-bottom: 20px;
       cursor: pointer;
     }
-
     .tab {
       padding: 10px 20px;
       background: #e1e8f0;
@@ -33,22 +31,20 @@
       user-select: none;
       transition: background-color 0.3s ease;
     }
-
     .tab:hover {
       background: #d0d9e7;
     }
-
     .tab.active {
       background: #2980b9;
       color: white;
       font-weight: 700;
     }
-  .tab.disabled-tab {
-  pointer-events: none;
-  background: #ccc;
-  color: #888;
-  cursor: not-allowed;
-}
+    .tab.disabled-tab {
+      pointer-events: none;
+      background: #ccc;
+      color: #888;
+      cursor: not-allowed;
+    }
     .module {
       background: #ffffff;
       border-radius: 10px;
@@ -56,18 +52,15 @@
       box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
       display: none;
     }
-
     .module.active {
       display: block;
     }
-
     iframe {
       width: 100%;
       height: 315px;
       border: none;
       border-radius: 8px;
     }
-
     .complete-btn {
       display: inline-block;
       margin-top: 10px;
@@ -79,8 +72,7 @@
       text-decoration: none;
       cursor: not-allowed;
     }
-
-    .complete-btn:enabled {
+    .complete-btn.enabled {
       background-color: #38d39f;
       color: white;
       cursor: pointer;
@@ -92,12 +84,11 @@
 <h1>Mandatory Security Awareness Training</h1>
 
 <div class="tabs">
-  <div class="tab active" data-tab="1">Recognizing Phishing</div>
+  <div class="tab" data-tab="1">Recognizing Phishing</div>
   <div class="tab disabled-tab" data-tab="2">Voice Phishing</div>
   <div class="tab disabled-tab" data-tab="3">Safe Browsing</div>
   <div class="tab disabled-tab" data-tab="4">Text Message Phishing</div>
 </div>
-
 
 <!-- MODULE 1 -->
 <div class="module active" data-content="1">
@@ -190,27 +181,88 @@
   </div>
 </div>
 
-
-
 <script>
-    const tabs = document.querySelectorAll('.tab');
-    const modules = document.querySelectorAll('.module');
-    const completionPage = document.getElementById('completion');
-    let completedModules = 0;
+  const tabs = document.querySelectorAll('.tab');
+  const modules = document.querySelectorAll('.module');
+  const completionPage = document.getElementById('completion');
+  let completedModules = 0;
 
-    // Tab click handling
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const target = tab.getAttribute('data-tab');
-        tabs.forEach(t => t.classList.remove('active'));
-        modules.forEach(m => m.classList.remove('active'));
-        tab.classList.add('active');
-        document.querySelector(`.module[data-content="${target}"]`).classList.add('active');
-      });
+  const userEmail = localStorage.getItem('employeeEmail') || 'guest_user';
+  const progressKey = `trainingProgress_${userEmail}`;
+
+  let userProgress = JSON.parse(localStorage.getItem(progressKey)) || {
+    completed: [],
+    currentTab: "1"
+  };
+
+  function updateProgressStorage() {
+    localStorage.setItem(progressKey, JSON.stringify(userProgress));
+  }
+
+  function activateTab(tabNum) {
+    tabs.forEach(tab => tab.classList.remove('active'));
+    modules.forEach(mod => mod.classList.remove('active'));
+
+    document.querySelector(`.tab[data-tab="${tabNum}"]`).classList.add('active');
+    document.querySelector(`.module[data-content="${tabNum}"]`).classList.add('active');
+
+    userProgress.currentTab = tabNum;
+    updateProgressStorage();
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabNum = tab.getAttribute('data-tab');
+      if (!tab.classList.contains('disabled-tab')) {
+        activateTab(tabNum);
+      }
     });
+  });
 
-    // Quiz answer checking
-    function checkAnswer(questionNum, correctAnswer) {
+  function enableTab(tabNum) {
+    const tab = document.querySelector(`.tab[data-tab="${tabNum}"]`);
+    if (tab) {
+      tab.classList.remove('disabled-tab');
+    }
+  }
+
+  function showCompletionPage() {
+    document.querySelector('.tabs').style.display = 'none';
+    modules.forEach(m => m.style.display = 'none');
+    completionPage.style.display = 'block';
+  }
+
+  function markModuleAsCompleted(moduleNum) {
+    if (!userProgress.completed.includes(moduleNum)) {
+      userProgress.completed.push(moduleNum);
+      updateProgressStorage();
+
+      // Unlock next tab
+      const nextTab = parseInt(moduleNum) + 1;
+      enableTab(nextTab);
+
+      completedModules++;
+      if (completedModules === 4) showCompletionPage();
+
+      // Send to server
+      fetch('/api/submit-result', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: userEmail,
+          moduleName: `Module ${moduleNum}`,
+          score: 100,
+          timestamp: new Date().toISOString()
+        })
+      }).catch(err => console.error('Server error:', err));
+    }
+  }
+
+  // Quiz check + completion button logic
+  document.querySelectorAll('.quiz-submit').forEach(button => {
+    button.addEventListener('click', () => {
+      const questionNum = button.dataset.question;
+      const correct = button.dataset.correct;
       const selected = document.querySelector(`input[name="q${questionNum}"]:checked`);
       const feedback = document.getElementById(`feedback${questionNum}`);
       const completeBtn = document.querySelector(`.complete-btn[data-btn="${questionNum}"]`);
@@ -221,50 +273,48 @@
         return;
       }
 
-      if (selected.value === correctAnswer) {
+      if (selected.value === correct) {
         feedback.innerText = "Correct! ✅";
         feedback.style.color = "green";
-
-        // Disable answer choices
-        document.querySelectorAll(`input[name="q${questionNum}"]`).forEach(input => input.disabled = true);
+        completeBtn.classList.add('enabled');
         completeBtn.disabled = false;
 
-        // Unlock next tab & check for final completion
-        completeBtn.addEventListener('click', () => {
-          const nextTab = document.querySelector(`.tab[data-tab="${parseInt(questionNum) + 1}"]`);
-          if (nextTab) {
-            nextTab.classList.remove('disabled-tab');
-            nextTab.click();
-          }
+        document.querySelectorAll(`input[name="q${questionNum}"]`).forEach(i => i.disabled = true);
 
-          completedModules++;
-          if (completedModules === 4) {
-            showCompletionPage();
+        completeBtn.addEventListener('click', () => {
+          if (completeBtn.classList.contains('enabled')) {
+            markModuleAsCompleted(questionNum);
+            const nextTab = document.querySelector(`.tab[data-tab="${parseInt(questionNum)+1}"]`);
+            if (nextTab && !nextTab.classList.contains('disabled-tab')) {
+              nextTab.click();
+            }
           }
-        });
+        }, { once: true });
 
       } else {
         feedback.innerText = "Incorrect. ❌ Please try again.";
         feedback.style.color = "red";
       }
-    }
+    });
+  });
 
-    // Wire up submit buttons
-    document.querySelectorAll('.quiz-submit').forEach(button => {
-      button.addEventListener('click', () => {
-        const questionNum = button.getAttribute('data-question');
-        const correctAnswer = button.getAttribute('data-correct');
-        checkAnswer(questionNum, correctAnswer);
-      });
+  // Load user progress on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    userProgress.completed.forEach(num => {
+      enableTab(num);
+      document.querySelector(`.complete-btn[data-btn="${num}"]`).classList.add('enabled');
+      document.querySelector(`.complete-btn[data-btn="${num}"]`).disabled = false;
     });
 
-    // Show completion page
-    function showCompletionPage() {
-      document.querySelector('.tabs').style.display = 'none';
-      modules.forEach(m => m.style.display = 'none');
-      completionPage.style.display = 'block';
-    }
-</script>
+    completedModules = userProgress.completed.length;
 
+    if (completedModules === 4) {
+      showCompletionPage();
+    } else {
+      enableTab("1");
+      activateTab(userProgress.currentTab);
+    }
+  });
+</script>
 </body>
 </html>
