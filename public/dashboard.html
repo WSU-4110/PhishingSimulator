@@ -37,30 +37,35 @@
     }
 
     .tab {
-      padding: 10px 20px;
-      background: #e1e8f0;
-      border-radius: 20px 20px 0 0;
+      padding: 12px 20px;
+      background: #f4f6f8;
+      border: none;
+      border-bottom: 2px solid transparent;
+      font-weight: 500;
+      color: #34495e;
+      transition: all 0.3s ease;
+      border-radius: 6px 6px 0 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .tab.active {
+      background: #ffffff;
+      border-bottom: 2px solid #2980b9;
       color: #2980b9;
       font-weight: 600;
-      user-select: none;
-      transition: background-color 0.3s ease;
-    }
+     }
+
 
     .tab:hover {
       background: #d0d9e7;
     }
 
-    .tab.active {
-      background: #2980b9;
-      color: white;
-      font-weight: 700;
-    }
-
     .module {
       background: #ffffff;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0px 3px 8px rgba(0,0,0,0.06);
+      margin-bottom: 30px;
       display: none;
     }
 
@@ -69,34 +74,46 @@
     }
 
     textarea, select, input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 6px;
+      margin-bottom: 12px;
       border: 1px solid #ccc;
+      transition: border-color 0.2s ease;
     }
 
+    textarea:focus, select:focus, input[type="text"]:focus {
+      border-color: #2980b9;
+      outline: none;
+    }
+
+
     button {
-      background-color: #38d39f;
+      background-color: #2980b9;
       color: white;
-      padding: 10px 20px;
+      padding: 10px 16px;
+      font-size: 14px;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      margin-top: 10px;
+      transition: background-color 0.3s ease;
     }
 
     button:hover {
-      background-color: #32c48d;
+      background-color: #1f5d90;
     }
 
+
     .email-preview {
-      background: #f1f1f1;
-      border: 1px solid #ccc;
-      padding: 15px;
-      margin-top: 10px;
+      background: #fdfdfd;
+      border-left: 4px solid #2980b9;
+      padding: 15px 20px;
+      margin-top: 20px;
       border-radius: 6px;
+      font-size: 14px;
+      color: #333;
     }
+
 
 /* Style for the template select */
 .styled-select {
@@ -260,11 +277,6 @@
     <label><input type="checkbox" value="samayyahcook@wayne.edu" /> Samayyah Cook</label>
   </div>
 
-<div class="add-email-container">
-  <input type="text" id="newEmailInput" placeholder="Add new email and press Enter" />
-  <div id="newEmailError" style="color: red; font-size: 13px; display:none; margin-top: 5px;">Invalid email format.</div>
-</div>
-
     <!-- New sender spoofing inputs -->
   <label for="displayName">Sender Name:</label>
   <input type="text" id="displayName" placeholder="e.g., HR Department" class="styled-input" />
@@ -276,10 +288,22 @@
 
   </div>
 
-  <div class="module" data-content="2">
-    <h2>Manage Users</h2>
-    <p>Coming soon: View, add, and manage employees here.</p>
+<div class="module" data-content="2">
+  <h2>Manage Users</h2>
+  <div style="max-width: 400px;">
+    <label for="newUserName">Full Name:</label>
+    <input type="text" id="newUserName" class="styled-input" placeholder="e.g., John Doe" />
+
+    <label for="newUserEmail">Email:</label>
+    <input type="text" id="newUserEmail" class="styled-input" placeholder="e.g., john@company.com" />
+
+    <button id="addUserBtn">Add User</button>
+
+    <div id="userFeedback" style="margin-top: 10px; color: green;"></div>
   </div>
+</div>
+
+
 
   <div class="module" data-content="3">
     <h2>Campaign Analytics</h2>
@@ -334,6 +358,43 @@
       });
     });
 
+  //Add User button handler
+  document.getElementById("addUserBtn").addEventListener("click", () => {
+    const name = document.getElementById("newUserName").value.trim();
+    const email = document.getElementById("newUserEmail").value.trim();
+    const feedback = document.getElementById("userFeedback");
+  // Basic validation
+    if (!name || !email || !email.includes("@")) {
+      feedback.style.color = "red";
+      feedback.textContent = "Please enter a valid name and email.";
+      return;
+    }
+
+  fetch("/add-user", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      feedback.style.color = "green";
+      feedback.textContent = "User added successfully!";
+      document.getElementById("newUserName").value = "";
+      document.getElementById("newUserEmail").value = "";
+    } else {
+      feedback.style.color = "red";
+      feedback.textContent = "Failed to add user.";
+    }
+  })
+  .catch(() => {
+    feedback.style.color = "red";
+    feedback.textContent = "Server error while adding user.";
+  });
+});
+    
+//Send Email button handler
+
 document.getElementById("sendBtn").addEventListener("click", () => {
   const template = document.getElementById("template").value;
 
@@ -343,6 +404,7 @@ document.getElementById("sendBtn").addEventListener("click", () => {
   const customMessage = document.getElementById("customMessage").value;
   const displayName = document.getElementById("displayName").value || "OptiHR Security";
   const spoofedEmail = document.getElementById("spoofedEmail").value || "optihragency@gmail.com";
+
 
   if (recipients.length === 0) {
     alert("Please select at least one recipient.");

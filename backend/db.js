@@ -3,7 +3,7 @@ const mysql = require('mysql2');
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'rootpassword123',
+  password: 'your_password_here', // replace with your MySQL root password
   database: 'phishing_platform'
 });
 

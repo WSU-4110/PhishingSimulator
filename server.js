@@ -1,3 +1,6 @@
+const authRoutes = require('./backend/auth.js');
+
+
 const express = require('express');
 const app = express();
 const fs = require('fs');
@@ -46,6 +49,9 @@ app.get("/track/open", (req, res) => {
 
 app.use(express.json());
 app.use(express.static('public')); // Serve static files
+
+app.use('/api', authRoutes); // handles POST /api/login
+
 
 //for modules 
 app.get('/modules.html', (req, res) => {
