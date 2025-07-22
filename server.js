@@ -1,12 +1,28 @@
+//This file allows people to access data with simple clicks and things like that. Handles everything we've made and either posts it or gets the data and returns it someway. 
+
 const express = require('express');
 const app = express();
 const fs = require('fs');
 const path = require('path');
 const trackingFile = "./tracking.json";
+const EmailTemplateFactory = require('./emailTemplates/EmailTemplateFactory');
+const nodemailer = require('nodemailer');
+const crypto = require("crypto");
+const { AdminDashboard, FetchInteractionAnalyticsCommand } = require('./backend/AnalyticsCommand'); // adjust path as needed
+const AnalyticsService = require('./backend/AnalyticsService');
 
 
-//must add data for video storage so that the videos are private and secure
-app.get("/track/open", (req, res) => {
+
+app.get("/api/analytics", (req, res) => { //API for frontend to request analytics data and insert in data table.
+  const dashboard = new AdminDashboard();
+  const analyticsService = new AnalyticsService();
+  const command = new FetchInteractionAnalyticsCommand(analyticsService);
+
+  const stats = dashboard.runCommand(command);
+  res.json({ success: true, data: stats});
+});
+
+app.get("/track/open", (req, res) => { //API for frontend to track the 1x1 Pixel in Emails and if it's been opened or not. 
   const token = req.query.token;
 
   if (!token) {
@@ -32,8 +48,7 @@ app.get("/track/open", (req, res) => {
     console.log(`Email opened by: ${trackingData[token].email}`);
   }
 
-  // Transparent 1x1 pixel image
-  const pixel = Buffer.from(
+  const pixel = Buffer.from(   // Transparent 1x1 pixel image
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AApgB9ENeZF8AAAAASUVORK5CYII=",
     "base64"
   );
@@ -47,20 +62,17 @@ app.get("/track/open", (req, res) => {
 app.use(express.json());
 app.use(express.static('public')); // Serve static files
 
-//for modules 
-app.get('/modules.html', (req, res) => {
+
+app.get('/modules.html', (req, res) => { //for modules 
   res.sendFile(path.join(__dirname, 'public', 'modules.html'));
 });
 
-// Endpoint to track phishing attempts
-app.post('/api/track-phish', (req, res) => {
+app.post('/api/track-phish', (req, res) => { // Post the phishing attempts.
   const { username, timestamp } = req.body;
 
-  // Simple logging to a JSON file for demo purposes
-  const dataFile = path.join(__dirname, 'data', 'phishAttempts.json');
+  const dataFile = path.join(__dirname, 'data', 'phishAttempts.json');   
 
-  // Read existing data or initialize array
-  let attempts = [];
+  let attempts = []; 
   if (fs.existsSync(dataFile)) {
     attempts = JSON.parse(fs.readFileSync(dataFile, 'utf-8'));
   }
@@ -72,13 +84,34 @@ app.post('/api/track-phish', (req, res) => {
   res.json({ success: true });
 });
 
+app.post('/api/add-user'. (req,res) => { //Add user portion
+  const { name, email, role } = req.body;
+
+  if (!name || !email) { //If no name or No email
+    return res.status(400).json({success: false, message: "Name and Email Address Required"})
+  }
+
+  const userFile = path.join(__dirname, "data", "users.json"); ; //This will be pulling from some users DB or .json file
+  let users = [];
+  if (fs.existsSync(userFile)) {
+    users = JSON.parse(fs.readFileSync(userFile,"utf-8"));
+  }
+
+  if (users.find(users => user.email === email)) {
+    return res.status(400).json({success: false, message: "User already exists"})
+  }
+
+  users.push({name, email, role: role || "Unknown"});
+  fs.writeFileSync(userFile. JSON.stringify(users,null,2));
+  res.json({success: true, message: "User added successfully!"});
+};
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 
-const EmailTemplateFactory = require('./emailTemplates/EmailTemplateFactory');
-const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({ //Use of Node.js transporter.
   service: "gmail",
   auth: {
     user: "optihragency@gmail.com",
@@ -86,7 +119,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-app.post("/send-email", (req, res) => {
+app.post("/send-email", (req, res) => { //Post to send email.
   const { template, recipients, customMessage, displayName, spoofedEmail } = req.body;
 
   let emailContent;
@@ -101,13 +134,29 @@ app.post("/send-email", (req, res) => {
   } catch (err) {
     return res.status(400).json({ success: false, error: "Invalid template" });
   }
+  
+const token = crypto.randomUUID();
+const trackingPixel = `<img src="http://localhost:3000/track/open?token=${token}" width="1" height="1" style="display:none;" />`;
+const htmlWithTracking = emailContent.html + trackingPixel;
+  
+let trackingData = {}; //List of people with credentials that have opened. Multiple recipients as wlel.
 
+if (fs.existsSync(trackingFile)) {
+  trackingData = JSON.parse(fs.readFileSync(trackingFile, "utf8"));
+}
+trackingData[token] = { //Trackingdata
+  email: recipients,
+  opened: false,
+  openedAt: null,
+};
+fs.writeFileSync(trackingFile, JSON.stringify(trackingData, null, 2)); //Prepares file
+  
   const mailOptions = {
     from: `${displayName} <${spoofedEmail}>`,
     to: recipients,
     subject: emailContent.subject,
     text: emailContent.plainText,
-    html: emailContent.html
+    html: htmlWithTracking 
   };
 
   transporter.sendMail(mailOptions, (err, info) => {
