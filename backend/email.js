@@ -1,4 +1,4 @@
-// email.js
+// Sends email with a tracking 1x1 pixel. implements some template(s). This is solely backend without javascript file. 
 
 const nodemailer = require("nodemailer");
 const fs = require("fs");
@@ -7,7 +7,13 @@ const EmailTemplateFactory = require("./emailTemplates/EmailTemplateFactory");
 
 // Select which phishing email template to use
 const selectedTemplate = "DocShare"; // You can change to "PasswordReset" or "PayStub"
-const emailContent = EmailTemplateFactory.createTemplate(selectedTemplate);
+const customSubject = "Important Document sent by HR for Review"; //Added custom subject line. All of these updates will be updated for usability.
+const defaultLink = "https://givemeyourmoney.edu/doc"; //Added custom link. All of these updates will be updated for usability.
+
+const emailContent = EmailTemplateFactory.createTemplate(selectedTemplate, { //Implemented some email content. All of these updates will be updated for usability.
+  link: defaultLink,
+  subject: customSubject,
+});
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -19,7 +25,7 @@ const transporter = nodemailer.createTransport({
 
 // Generate unique token
 const token = crypto.randomUUID();
-const recipientEmail = "employee@example.com"; // Replace as needed
+const recipientEmail = "employee@example.com"; // Allow for usability. Will add changes to this parameter
 
 // Save token + recipient
 let trackingData = {};
@@ -46,7 +52,7 @@ const message = {
   to: "employee@example.com", // Replace with target test email
   subject: emailContent.subject,
   text: emailContent.plainText,
-  html: emailContent.html,
+  html: htmlWithTracking, //Changed this to include Tracking pixel (1x1).
 };
 
 transporter.sendMail(message, (err, info) => {
