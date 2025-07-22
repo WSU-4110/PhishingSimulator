@@ -20,3 +20,7 @@ A phishing simulation tool developed using JavaScript, HTML, and CSS. This proje
 git clone https://github.com/WSU-4110/PhishingSimulator.git
 cd PhishingSimulator
 npm install
+Install MySQL.
+Run `create_tables.sql` to create the database:
+  mysql -u root -p < create_tables.sql
+
