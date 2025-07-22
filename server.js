@@ -120,5 +120,28 @@ app.post("/send-email", (req, res) => {
   });
 });
 
+// Save quiz/module result from employee
+app.post('/api/submit-result', (req, res) => {
+  const { username, moduleName, score, timestamp } = req.body;
+
+  if (!username || !moduleName || typeof score !== 'number') {
+    return res.status(400).json({ success: false, error: "Missing or invalid data" });
+  }
+
+  const resultsFile = path.join(__dirname, 'data', 'results.json');
+
+  let results = [];
+  if (fs.existsSync(resultsFile)) {
+    results = JSON.parse(fs.readFileSync(resultsFile, 'utf8'));
+  }
+
+  results.push({ username, moduleName, score, timestamp: timestamp || new Date().toISOString() });
+
+  fs.writeFileSync(resultsFile, JSON.stringify(results, null, 2));
+
+  res.json({ success: true });
+});
+
+
 
 
