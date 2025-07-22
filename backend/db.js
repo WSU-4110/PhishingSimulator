@@ -7,20 +7,12 @@ const db = mysql.createConnection({
   database: 'phishing_platform'
 });
 
-connection.connect((err) => {
-  if (err) {
-    console.error('Connection failed:', err.message);
-  } else {
-    console.log('Connected to MySQL!');
-    connection.end();
-  }
-});
-
+// Connect once and export
 db.connect((err) => {
   if (err) {
-    console.error('MySQL connection error:', err);
+    console.error('MySQL connection error:', err.message);
   } else {
-    console.log('Connected to MySQL');
+    console.log('✅ Connected to MySQL!');
   }
 });
 

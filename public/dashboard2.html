@@ -360,9 +360,23 @@
   </div>
 
   <div class="module" data-content="3">
-    <h2>Campaign Analytics</h2>
-    <p>Coming soon: View who opened, clicked, and responded to phishing tests.</p>
-  </div>
+  <h2>Campaign Analytics</h2>
+  <p>Coming soon: View who opened, clicked, and responded to phishing tests.</p>
+  <table id="clickStatsTable" style="width: 100%; border-collapse: collapse; margin-top: 15px; display: none;">
+    <thead>
+      <tr>
+        <th style="border-bottom: 2px solid #2980b9; padding: 8px; text-align: left;">Employee Name</th>
+        <th style="border-bottom: 2px solid #2980b9; padding: 8px; text-align: left;">Email</th>
+        <th style="border-bottom: 2px solid #2980b9; padding: 8px; text-align: left;">Email Type</th>
+        <th style="border-bottom: 2px solid #2980b9; padding: 8px; text-align: left;">Click Count</th>
+      </tr>
+    </thead>
+    <tbody id="clickStatsBody"></tbody>
+  </table>
+  <p id="loadingClicks" style="color: #2980b9; font-weight: 600;">Loading click stats...</p>
+  <p id="noClicksMessage" style="display:none; color: #999;">No click data available.</p>
+</div>
+
 
   <script>
     const tabs = document.querySelectorAll('.tab');
@@ -413,7 +427,7 @@
       }
     };
 
-    <div id="recipientsList" style="margin-top: 20px;"></div>
+    //<div id="recipientsList" style="margin-top: 20px;"></div>
 
 
     templateSelect.addEventListener("change", () => {
@@ -566,6 +580,79 @@ recipientsList.appendChild(newLabel);
         alert("Error sending email.");
       });
     });
+
+    //fetch click stats for campaign
+     const clickStatsTable = document.getElementById("clickStatsTable");
+    const clickStatsBody = document.getElementById("clickStatsBody");
+const loadingClicks = document.getElementById("loadingClicks");
+const noClicksMessage = document.getElementById("noClicksMessage");
+
+function loadClickStats() {
+  loadingClicks.style.display = "block";
+  noClicksMessage.style.display = "none";
+  clickStatsTable.style.display = "none";
+  clickStatsBody.innerHTML = "";
+
+  fetch("/api/clicks")
+    .then(res => {
+      if (!res.ok) throw new Error("Network response was not ok");
+      return res.json();
+    })
+    .then(data => {
+      loadingClicks.style.display = "none";
+
+      if (data.length === 0) {
+        noClicksMessage.style.display = "block";
+        return;
+      }
+
+      clickStatsTable.style.display = "table";
+
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+
+        const tdName = document.createElement("td");
+        tdName.textContent = row.employeeName;
+        tdName.style.padding = "8px";
+
+        const tdEmail = document.createElement("td");
+        tdEmail.textContent = row.email;
+        tdEmail.style.padding = "8px";
+
+        const tdEmailType = document.createElement("td");
+        tdEmailType.textContent = row.email_type;
+        tdEmailType.style.padding = "8px";
+
+        const tdClickCount = document.createElement("td");
+        tdClickCount.textContent = row.clickCount;
+        tdClickCount.style.padding = "8px";
+
+        tr.appendChild(tdName);
+        tr.appendChild(tdEmail);
+        tr.appendChild(tdEmailType);
+        tr.appendChild(tdClickCount);
+
+        clickStatsBody.appendChild(tr);
+      });
+    })
+    .catch(err => {
+      loadingClicks.style.display = "none";
+      noClicksMessage.style.display = "block";
+      noClicksMessage.textContent = "Failed to load click stats.";
+      console.error("Error loading click stats:", err);
+    });
+}
+
+// Load stats when the Campaign Analytics tab is clicked
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    if (tab.getAttribute('data-tab') === '3') {
+      loadClickStats();
+    }
+  });
+});
+
+    
 
   </script>
 </body>

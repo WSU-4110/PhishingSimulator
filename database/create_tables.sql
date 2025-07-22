@@ -28,3 +28,14 @@ CREATE TABLE IF NOT EXISTS QuizResults (
   FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
   FOREIGN KEY (company_id) REFERENCES Companies(company_id)
 );
+
+-- Click tracking table
+CREATE TABLE IF NOT EXISTS Clicks (
+  click_id INT AUTO_INCREMENT PRIMARY KEY,
+  employee_id INT,
+  company_id INT,
+  email_type VARCHAR(50),  -- e.g. 'DocShare', 'PasswordReset'
+  clicked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
+  FOREIGN KEY (company_id) REFERENCES Companies(company_id)
+);
