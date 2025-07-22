@@ -47,9 +47,51 @@ app.get("/track/open", (req, res) => {
 app.use(express.json());
 app.use(express.static('public')); // Serve static files
 
-//for modules 
-app.get('/modules.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'modules.html'));
+//admi loging authentication 
+const jwt = require('jsonwebtoken');
+
+const SECRET_KEY = "super_secret_key"; // In production, use environment variables
+const adminUser = {
+  username: "admin",
+  password: "admin123" // You can hardcode or read from env for now
+};
+
+function verifyToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) return res.sendStatus(401); // Unauthorized
+
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) return res.sendStatus(403); // Forbidden
+    req.user = user; // attach user info to request
+    next();
+  });
+}
+
+// Admin login route
+app.post('/api/admin/login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (username === adminUser.username && password === adminUser.password) {
+    const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: '1h' });
+    return res.json({ token });
+  }
+
+  return res.status(401).json({ error: "Invalid credentials" });
+});
+
+
+// Admin dashboard fetches all results (protected)
+app.get('/api/results', verifyToken, (req, res) => {
+  const resultsFile = path.join(__dirname, 'data', 'results.json');
+
+  if (!fs.existsSync(resultsFile)) {
+    return res.json([]);
+  }
+
+  const results = JSON.parse(fs.readFileSync(resultsFile, 'utf8'));
+  res.json(results);
 });
 
 // Endpoint to track phishing attempts
@@ -70,6 +112,11 @@ app.post('/api/track-phish', (req, res) => {
   fs.writeFileSync(dataFile, JSON.stringify(attempts, null, 2));
 
   res.json({ success: true });
+});
+
+// testing to check if token auth works
+app.get('/api/admin/test-auth', verifyToken, (req, res) => {
+  res.json({ message: "Authenticated!", user: req.user });
 });
 
 const PORT = process.env.PORT || 3000;
@@ -142,17 +189,6 @@ app.post('/api/submit-result', (req, res) => {
   res.json({ success: true });
 });
 
-// Admin dashboard fetches all results
-app.get('/api/results', (req, res) => {
-  const resultsFile = path.join(__dirname, 'data', 'results.json');
-
-  if (!fs.existsSync(resultsFile)) {
-    return res.json([]);
-  }
-
-  const results = JSON.parse(fs.readFileSync(resultsFile, 'utf8'));
-  res.json(results);
-});
 
 
 
