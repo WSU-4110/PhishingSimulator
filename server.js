@@ -1,28 +1,103 @@
-//This file allows people to access data with simple clicks and things like that. Handles everything we've made and either posts it or gets the data and returns it someway. 
+// This file allows people to access data with simple clicks and things like that.
+// Handles everything we've made and either posts it or gets the data and returns it in some way.
 
 const express = require('express');
 const app = express();
 const fs = require('fs');
 const path = require('path');
+const jwt = require('jsonwebtoken'); // JWT tracking
 const trackingFile = "./tracking.json";
 const EmailTemplateFactory = require('./emailTemplates/EmailTemplateFactory');
 const nodemailer = require('nodemailer');
 const crypto = require("crypto");
-const { AdminDashboard, FetchInteractionAnalyticsCommand } = require('./backend/AnalyticsCommand'); // adjust path as needed
+const { AdminDashboard, FetchInteractionAnalyticsCommand } = require('./backend/AnalyticsCommand');
 const AnalyticsService = require('./backend/AnalyticsService');
 
+const SECRET_KEY = "super_secret_key"; // Use env var in prod
 
+app.use(express.json());
+app.use(express.static('public'));
 
-app.get("/api/analytics", (req, res) => { //API for frontend to request analytics data and insert in data table.
+const adminUser = {
+  username: "admin",
+  password: "admin123"
+};
+
+// JWT middleware
+function verifyToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
+
+// Admin login route
+app.post('/api/admin/login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === adminUser.username && password === adminUser.password) {
+    const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: '1h' });
+    return res.json({ token });
+  }
+  res.status(401).json({ error: "Invalid credentials" });
+});
+
+// Protected route to fetch analytics data
+app.get('/api/analytics', verifyToken, (req, res) => {
   const dashboard = new AdminDashboard();
   const analyticsService = new AnalyticsService();
   const command = new FetchInteractionAnalyticsCommand(analyticsService);
 
   const stats = dashboard.runCommand(command);
-  res.json({ success: true, data: stats});
+  res.json({ success: true, data: stats });
 });
 
-app.get("/track/open", (req, res) => { //API for frontend to track the 1x1 Pixel in Emails and if it's been opened or not. 
+app.post('/api/verify-token', (req, res) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ valid: false });
+
+  jwt.verify(token, SECRET_KEY, (err) => {
+    if (err) return res.status(403).json({ valid: false });
+    res.json({ valid: true });
+  });
+});
+
+// Submit quiz/module result (no auth)
+app.post('/api/submit-result', (req, res) => {
+  const { username, moduleName, score, timestamp } = req.body;
+  if (!username || !moduleName || typeof score !== 'number') {
+    return res.status(400).json({ success: false, error: "Missing or invalid data" });
+  }
+
+  const resultsFile = path.join(__dirname, 'data', 'results.json');
+  let results = [];
+
+  if (fs.existsSync(resultsFile)) {
+    results = JSON.parse(fs.readFileSync(resultsFile, 'utf8'));
+  }
+
+  results.push({ username, moduleName, score, timestamp: timestamp || new Date().toISOString() });
+  fs.writeFileSync(resultsFile, JSON.stringify(results, null, 2));
+
+  res.json({ success: true });
+});
+
+// Protected route to fetch results (admin only)
+app.get('/api/results', verifyToken, (req, res) => {
+  const resultsFile = path.join(__dirname, 'data', 'results.json');
+  if (!fs.existsSync(resultsFile)) {
+    return res.json([]);
+  }
+  const results = JSON.parse(fs.readFileSync(resultsFile, 'utf8'));
+  res.json(results);
+});
+
+app.get("/track/open", (req, res) => { // Track the 1x1 pixel in emails
   const token = req.query.token;
 
   if (!token) {
@@ -48,7 +123,7 @@ app.get("/track/open", (req, res) => { //API for frontend to track the 1x1 Pixel
     console.log(`Email opened by: ${trackingData[token].email}`);
   }
 
-  const pixel = Buffer.from(   // Transparent 1x1 pixel image
+  const pixel = Buffer.from(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AApgB9ENeZF8AAAAASUVORK5CYII=",
     "base64"
   );
@@ -59,59 +134,51 @@ app.get("/track/open", (req, res) => { //API for frontend to track the 1x1 Pixel
   res.end(pixel);
 });
 
-app.use(express.json());
-app.use(express.static('public')); // Serve static files
-
-
-app.get('/modules.html', (req, res) => { //for modules 
+app.get('/modules.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'modules.html'));
 });
 
-app.post('/api/track-phish', (req, res) => { // Post the phishing attempts.
+app.post('/api/track-phish', (req, res) => {
   const { username, timestamp } = req.body;
 
-  const dataFile = path.join(__dirname, 'data', 'phishAttempts.json');   
+  const dataFile = path.join(__dirname, 'data', 'phishAttempts.json');
+  let attempts = [];
 
-  let attempts = []; 
   if (fs.existsSync(dataFile)) {
     attempts = JSON.parse(fs.readFileSync(dataFile, 'utf-8'));
   }
 
   attempts.push({ username, timestamp });
-
   fs.writeFileSync(dataFile, JSON.stringify(attempts, null, 2));
 
   res.json({ success: true });
 });
 
-app.post('/api/add-user'. (req,res) => { //Add user portion
+app.post('/api/add-user', (req, res) => {
   const { name, email, role } = req.body;
 
-  if (!name || !email) { //If no name or No email
-    return res.status(400).json({success: false, message: "Name and Email Address Required"})
+  if (!name || !email) {
+    return res.status(400).json({ success: false, message: "Name and Email Address Required" });
   }
 
-  const userFile = path.join(__dirname, "data", "users.json"); ; //This will be pulling from some users DB or .json file
+  const userFile = path.join(__dirname, "data", "users.json");
   let users = [];
+
   if (fs.existsSync(userFile)) {
-    users = JSON.parse(fs.readFileSync(userFile,"utf-8"));
+    users = JSON.parse(fs.readFileSync(userFile, "utf-8"));
   }
 
-  if (users.find(users => user.email === email)) {
-    return res.status(400).json({success: false, message: "User already exists"})
+  if (users.find(user => user.email === email)) {
+    return res.status(400).json({ success: false, message: "User already exists" });
   }
 
-  users.push({name, email, role: role || "Unknown"});
-  fs.writeFileSync(userFile. JSON.stringify(users,null,2));
-  res.json({success: true, message: "User added successfully!"});
-};
+  users.push({ name, email, role: role || "Unknown" });
+  fs.writeFileSync(userFile, JSON.stringify(users, null, 2));
 
+  res.json({ success: true, message: "User added successfully!" });
+});
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
-
-
-const transporter = nodemailer.createTransport({ //Use of Node.js transporter.
+const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: "optihragency@gmail.com",
@@ -119,7 +186,7 @@ const transporter = nodemailer.createTransport({ //Use of Node.js transporter.
   },
 });
 
-app.post("/send-email", (req, res) => { //Post to send email.
+app.post("/send-email", (req, res) => {
   const { template, recipients, customMessage, displayName, spoofedEmail } = req.body;
 
   let emailContent;
@@ -134,29 +201,28 @@ app.post("/send-email", (req, res) => { //Post to send email.
   } catch (err) {
     return res.status(400).json({ success: false, error: "Invalid template" });
   }
-  
-const token = crypto.randomUUID();
-const trackingPixel = `<img src="http://localhost:3000/track/open?token=${token}" width="1" height="1" style="display:none;" />`;
-const htmlWithTracking = emailContent.html + trackingPixel;
-  
-let trackingData = {}; //List of people with credentials that have opened. Multiple recipients as wlel.
 
-if (fs.existsSync(trackingFile)) {
-  trackingData = JSON.parse(fs.readFileSync(trackingFile, "utf8"));
-}
-trackingData[token] = { //Trackingdata
-  email: recipients,
-  opened: false,
-  openedAt: null,
-};
-fs.writeFileSync(trackingFile, JSON.stringify(trackingData, null, 2)); //Prepares file
-  
+  const token = crypto.randomUUID();
+  const trackingPixel = `<img src="http://localhost:3000/track/open?token=${token}" width="1" height="1" style="display:none;" />`;
+  const htmlWithTracking = emailContent.html + trackingPixel;
+
+  let trackingData = {};
+  if (fs.existsSync(trackingFile)) {
+    trackingData = JSON.parse(fs.readFileSync(trackingFile, "utf8"));
+  }
+  trackingData[token] = {
+    email: recipients,
+    opened: false,
+    openedAt: null,
+  };
+  fs.writeFileSync(trackingFile, JSON.stringify(trackingData, null, 2));
+
   const mailOptions = {
     from: `${displayName} <${spoofedEmail}>`,
     to: recipients,
     subject: emailContent.subject,
     text: emailContent.plainText,
-    html: htmlWithTracking 
+    html: htmlWithTracking
   };
 
   transporter.sendMail(mailOptions, (err, info) => {
@@ -169,5 +235,5 @@ fs.writeFileSync(trackingFile, JSON.stringify(trackingData, null, 2)); //Prepare
   });
 });
 
-
-
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
