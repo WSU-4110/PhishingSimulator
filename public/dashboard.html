@@ -287,6 +287,26 @@
       visibility: visible;
     }
 
+    table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 30px;
+}
+
+th, td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #2e86de;
+  color: white;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
 
   </style>
 </head>
@@ -376,9 +396,24 @@
 </div>
 
   <div class="module" data-content="3">
-    <h2>Campaign Analytics</h2>
-    <p>Coming soon: View who opened, clicked, and responded to phishing tests.</p>
-  </div>
+  <h2>Campaign Analytics</h2>
+  <p>View who opened, clicked, and responded to phishing tests.</p>
+
+  <table id="trackingTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Opened</th>
+        <th>Clicked</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Rows will be populated by JS -->
+    </tbody>
+  </table>
+</div>
+
 
   <script>
     const tabs = document.querySelectorAll('.tab');
@@ -677,6 +712,27 @@ tabButtons.forEach(button => {
     });
 });
 
+  window.onload = async () => {
+    try {
+      const res = await fetch('/api/tracking'); 
+      const trackingData = await res.json();
+      const tableBody = document.querySelector("#trackingTable tbody");
+      tableBody.innerHTML = "";
+
+      trackingData.forEach(entry => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${entry.name || '-'}</td>
+          <td>${entry.email}</td>
+          <td>${entry.opened ? 'Yes' : 'No'}</td>
+          <td>${entry.clicked ? 'Yes' : 'No'}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    } catch (error) {
+      console.error("Error loading tracking data:", error);
+    }
+  };
   </script>
 </body>
 </html>
