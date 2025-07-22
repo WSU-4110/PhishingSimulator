@@ -142,6 +142,18 @@ app.post('/api/submit-result', (req, res) => {
   res.json({ success: true });
 });
 
+// Admin dashboard fetches all results
+app.get('/api/results', (req, res) => {
+  const resultsFile = path.join(__dirname, 'data', 'results.json');
+
+  if (!fs.existsSync(resultsFile)) {
+    return res.json([]);
+  }
+
+  const results = JSON.parse(fs.readFileSync(resultsFile, 'utf8'));
+  res.json(results);
+});
+
 
 
 
