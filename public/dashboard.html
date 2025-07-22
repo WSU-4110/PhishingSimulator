@@ -227,6 +227,7 @@
     <div class="tab active" data-tab="1">Simulator</div>
     <div class="tab" data-tab="2">Manage Users</div>
     <div class="tab" data-tab="3">Campaign Analytics</div>
+    <div class="tab" data-tab ="4">Module Progress</div>
   </div>
 
   <div class="module active" data-content="1">
@@ -286,7 +287,68 @@
     <p>Coming soon: View who opened, clicked, and responded to phishing tests.</p>
   </div>
 
+  <div class="module" data-content="4">
+  <h2>Module Progress & Assignment</h2>
+
+  <table style="width:100%; border-collapse: collapse; margin-bottom: 30px;">
+    <thead>
+      <tr style="background-color: #2980b9; color: white;">
+        <th style="padding: 12px; text-align: left;">Employee</th>
+        <th style="padding: 12px; text-align: left;">Email</th>
+        <th style="padding: 12px; text-align: left;">Assigned Modules</th>
+        <th style="padding: 12px; text-align: left;">Completed</th>
+        <th style="padding: 12px; text-align: left;">Progress</th>
+      </tr>
+    </thead>
+    <tbody id="progressTableBody">
+      <!-- Filled dynamically -->
+    </tbody>
+  </table>
+
+  <h3>Assign Module to Employee</h3>
+  <label for="assignEmail">Employee Email:</label>
+  <input type="text" id="assignEmail" placeholder="e.g. tvthomas1@wayne.edu" class="styled-input" />
+
+  <label for="assignModule">Select Module:</label>
+  <select id="assignModule" class="styled-select">
+    <option value="IntroToPhishing">Intro to Phishing</option>
+    <option value="CredentialSafety">Credential Safety</option>
+    <option value="EmailSpoofing101">Email Spoofing 101</option>
+    <option value="AdvancedThreats">Advanced Threats</option>
+  </select>
+
+  <button id="assignModuleBtn">Assign Module</button>
+</div>
+
+
   <script>
+
+  const token = localStorage.getItem("authToken"); 
+
+  if (!token) {
+    // Not logged in, redirect to login page
+    window.location.href = "/login.html";
+  }
+
+  // verify token with backend
+  fetch("/verify-token", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  })
+  .then(res => {
+    if (!res.ok) {
+      // Invalid token, force logout
+      window.location.href = "/login.html";
+    }
+  })
+  .catch(() => {
+    window.location.href = "/login.html";
+  });
+
+
+  
     const tabs = document.querySelectorAll('.tab');
     const modules = document.querySelectorAll('.module');
     const templateSelect = document.getElementById("template");
@@ -369,6 +431,63 @@ document.getElementById("sendBtn").addEventListener("click", () => {
     console.error(err);
     alert("Error sending email.");
   });
+});
+
+    const progressData = [
+  {
+    name: "TaSain Thomas",
+    email: "tvthomas1@wayne.edu",
+    assigned: ["Intro to Phishing", "Email Spoofing 101"],
+    completed: ["Intro to Phishing"]
+  },
+  {
+    name: "Andrea Aguirre",
+    email: "hh9241@wayne.edu",
+    assigned: ["Credential Safety"],
+    completed: []
+  },
+];
+
+function populateProgressTable() {
+  const tbody = document.getElementById("progressTableBody");
+  tbody.innerHTML = "";
+
+  progressData.forEach(user => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td style="padding:10px;">${user.name}</td>
+      <td style="padding:10px;">${user.email}</td>
+      <td style="padding:10px;">${user.assigned.join(", ")}</td>
+      <td style="padding:10px;">${user.completed.join(", ")}</td>
+      <td style="padding:10px;">
+        ${Math.round((user.completed.length / user.assigned.length) * 100)}%
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+// Call it when tab 4 is clicked
+document.querySelector('.tab[data-tab="4"]').addEventListener("click", populateProgressTable);
+
+document.getElementById("assignModuleBtn").addEventListener("click", () => {
+  const email = document.getElementById("assignEmail").value.trim();
+  const module = document.getElementById("assignModule").value;
+
+  const user = progressData.find(u => u.email === email);
+  if (!user) {
+    alert("User not found.");
+    return;
+  }
+
+  if (user.assigned.includes(module)) {
+    alert("Module already assigned.");
+    return;
+  }
+
+  user.assigned.push(module);
+  alert(`Module "${module}" assigned to ${user.name}.`);
+  populateProgressTable();
 });
 
 
