@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f9f9f9;
+      padding: 30px;
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      color: #2c3e50;
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 16px;
+      color: #555;
+    }
+
+    .tabs {
+      border-bottom: 2px solid #2980b9;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    .tab {
+      padding: 12px 20px;
+      background: #f4f6f8;
+      border: none;
+      border-bottom: 2px solid transparent;
+      font-weight: 500;
+      color: #34495e;
+      transition: all 0.3s ease;
+      border-radius: 6px 6px 0 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .tab.active {
+      background: #ffffff;
+      border-bottom: 2px solid #2980b9;
+      color: #2980b9;
+      font-weight: 600;
+     }
+
+    .tab:hover {
+      background: #d0d9e7;
+    }
+
+    .module {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0px 3px 8px rgba(0,0,0,0.06);
+      margin-bottom: 30px;
+      display: none;
+    }
+
+    .module.active {
+      display: block;
+    }
+
+    textarea, select, input[type="text"] {
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      transition: border-color 0.2s ease;
+    }
+
+    textarea:focus, select:focus, input[type="text"]:focus {
+      border-color: #2980b9;
+      outline: none;
+    }
+
+    button {
+      background-color: #2980b9;
+      color: white;
+      padding: 10px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1f5d90;
+    }
+
+    .email-preview {
+      background: #fdfdfd;
+      border-left: 4px solid #2980b9;
+      padding: 15px 20px;
+      margin-top: 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    /* Style for the template select */
+    .styled-select {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 18px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1.5px solid #2980b9;
+      background: white;
+      color: #2980b9;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+
+    .styled-select:hover,
+    .styled-select:focus {
+      border-color: #1f5d90;
+    }
+
+    /* Recipients list container */
+    .recipients-list {
+      max-height: 140px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      background: white;
+      margin: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Custom checkbox styling */
+    .recipients-list label {
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+      font-size: 16px;
+      color: #333;
+      cursor: pointer;
+      user-select: none;
+      gap: 10px;
+      position: relative;
+    }
+
+    /* Hide default checkbox */
+    .recipients-list input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #2980b9;
+      border-radius: 5px;
+      cursor: pointer;
+      position: relative;
+      outline: none;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    /* Checked state */
+    .recipients-list input[type="checkbox"]:checked {
+      background-color: #2980b9;
+      border-color: #2980b9;
+    }
+
+    /* Checkmark */
+    .recipients-list input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 7px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2.5px 2.5px 0;
+      transform: rotate(45deg);
+    }
+
+    /* Add email input */
+    .add-email-container {
+      margin-top: 10px;
+    }
+
+    #newEmailInput {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      font-size: 16px;
+      font-family: 'Poppins', sans-serif;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    #newEmailInput:focus {
+      border-color: #2980b9;
+    }
+
+    /* Shared style for inputs */
+    .styled-input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      font-size: 16px;
+      font-family: 'Poppins', sans-serif;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .styled-input:focus {
+      border-color: #2980b9;
+    }
+
+    /* --- NEW improved styling for custom email area --- */
+    #customMessageArea {
+      background: #f9fbfe;
+      border: 1.5px solid #2980b9;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-top: 20px;
+      max-width: 100%;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    #customMessageArea label {
+      font-weight: 600;
+      font-size: 16px;
+      color: #2980b9;
+      display: block;
+      margin-bottom: 6px;
+      margin-top: 16px;
+    }
+
+    #customSubject,
+    #customMessage {
+      width: 100%;
+      font-size: 15px;
+      padding: 12px 15px;
+      border: 1.5px solid #2980b9;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      transition: border-color 0.3s ease;
+      resize: vertical;
+      color: #2c3e50;
+    }
+
+    #customSubject::placeholder,
+    #customMessage::placeholder {
+      color: #7a8a9f;
+      font-style: italic;
+    }
+
+    #customSubject:focus,
+    #customMessage:focus {
+      border-color: #1f5d90;
+      outline: none;
+    }
+
+    #customMessage {
+      min-height: 100px;
+    }
+
+    #customMessageArea input,
+    #customMessageArea textarea {
+      box-sizing: border-box;  /* so padding/border don’t add extra width */
+      width: 100%;             /* fill container width */
+    }
+
+    #copyLinkContainer:hover #copyTooltip {
+      visibility: visible;
+    }
+
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Phishing Simulator</h1>
+    <p>Welcome to the Admin Dashboard. Use the simulator to send fake phishing emails to employees and track their awareness training progress.</p>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="1">Simulator</div>
+    <div class="tab" data-tab="2">Manage Users</div>
+    <div class="tab" data-tab="3">Campaign Analytics</div>
+  </div>
+
+  <div class="module active" data-content="1">
+    <h2>Send Phishing Simulation</h2>
+    <label for="template">Choose Template:</label>
+      <select id="template" class="styled-select">
+        <option value="DocShare">Document Share</option>
+        <option value="PasswordReset">Password Reset</option>
+        <option value="PayStub">Pay Stub</option>
+        <option value="Custom">Custom</option>
+      </select>
+
+    <div id="customMessageArea" style="display:none">
+      <label for="customSubject">Custom Subject:</label>
+      <input type="text" id="customSubject" placeholder="Enter custom email subject" class="styled-input" />
+
+      <label for="customMessage">Custom Message:</label>
+      <textarea id="customMessage" rows="4" placeholder="Write your message here, e.g. Click here to verify: "></textarea>
+    </div>
+
+    <div id="copyLinkContainer" style="display:none; margin-top: 8px; cursor: pointer; user-select: all; border: 1px solid #2980b9; padding: 8px 12px; border-radius: 6px; background: #f0f8ff; max-width: 100%; width: fit-content; position: relative;">
+      <span id="copyLinkText">Paste into email: http://localhost:3000/index.html</span>
+      <span id="copyTooltip" style="visibility: hidden; position: absolute; top: -25px; right: 10px; background: #2980b9; color: white; padding: 3px 8px; border-radius: 4px; font-size: 12px; white-space: nowrap;">Click to copy</span>
+    </div>
+
+
+
+    <div class="email-preview" id="preview">
+      <h3>Email Preview</h3>
+      <p><strong>Subject:</strong> <span id="preview-subject">Your Latest Pay Stub is Ready</span></p>
+      <p><strong>Body:</strong></p>
+      <div id="preview-body"><p>Your pay stub is now available. <a href="#">View Pay Stub</a></p></div>
+    </div>
+
+    <label>Recipients:</label>
+    <div id="recipientsList" class="recipients-list">
+      <label><input type="checkbox" value="tvthomas1@wayne.edu" /> TaSain Thomas</label>
+      <label><input type="checkbox" value="hh9241@wayne.edu" /> Andrea Aguirre</label>
+      <label><input type="checkbox" value="hj8382@wayne.edu" /> Taslima Khanom</label>
+      <label><input type="checkbox" value="samayyahcook@wayne.edu" /> Samayyah Cook</label>
+    </div>
+
+    <button id="sendBtn">Send Email</button>
+    </div>
+  
+
+  <div class="module" data-content="2">
+
+  <div style="max-width: 500px;">
+    <label for="newUserName">Full Name:</label>
+    <input type="text" id="newUserName" class="styled-input" placeholder="e.g., John Doe" />
+
+    <label for="newUserEmail">Email:</label>
+    <input type="text" id="newUserEmail" class="styled-input" placeholder="e.g., john@company.com" />
+
+    <label for="newUserRole">Role (optional):</label>
+    <input type="text" id="newUserRole" class="styled-input" placeholder="e.g., Manager, Engineer" />
+
+    <button id="addUserBtn">Add User</button>
+    <div id="userFeedback" style="margin-top: 10px; color: green;"></div>
+  </div>
+
+  <h3 style="margin-top: 30px;">Current Users</h3>
+  <table id="userTable" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+    <thead>
+      <tr style="background-color: #ecf0f1;">
+        <th style="text-align: left; padding: 10px;">Name</th>
+        <th style="text-align: left; padding: 10px;">Email</th>
+        <th style="text-align: center; padding: 10px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="userTableBody"></tbody>
+  </table>
+</div>
+
+  <div class="module" data-content="3">
+    <h2>Campaign Analytics</h2>
+    <p>Coming soon: View who opened, clicked, and responded to phishing tests.</p>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const modules = document.querySelectorAll('.module');
+    const templateSelect = document.getElementById("template");
+    const previewSubject = document.getElementById("preview-subject");
+    const previewBody = document.getElementById("preview-body");
+    const customMessageArea = document.getElementById("customMessageArea");
+
+    const customSubjectInput = document.getElementById("customSubject");
+    const customMessageTextarea = document.getElementById("customMessage");
+
+    const copyLinkContainer = document.getElementById("copyLinkContainer");
+    const copyTooltip = document.getElementById("copyTooltip");
+
+    copyLinkContainer.addEventListener("click", () => {
+      const link = copyLinkContainer.querySelector("#copyLinkText").innerText;
+      navigator.clipboard.writeText(link).then(() => {
+        copyTooltip.innerText = "Copied!";
+        setTimeout(() => {
+        copyTooltip.innerText = "Click to copy";
+        }, 1500);
+      }).catch(() => {
+        copyTooltip.innerText = "Failed to copy";
+        setTimeout(() => {
+          copyTooltip.innerText = "Click to copy";
+        }, 1500);
+      });
+});
+
+
+    const previews = {
+      "DocShare": {
+        subject: "New Document Shared With You",
+        html: "<p>You received a secure document. <a href='#'>View Document</a></p>"
+      },
+      "PasswordReset": {
+        subject: "Action Required: Password Reset Request",
+        html: "<p>Your account needs a password reset. <a href='#'>Reset Now</a></p>"
+      },
+      "PayStub": {
+        subject: "Your Latest Pay Stub is Ready",
+        html: "<p>Your pay stub is now available. <a href='#'>View Pay Stub</a></p>"
+      },
+      "Custom": {
+        subject: "Custom Message",
+        html: "<p>(Write your own content above)</p>"
+      }
+    };
+
+    templateSelect.addEventListener("change", () => {
+      const selected = templateSelect.value;
+      if (selected === "Custom") {
+        customMessageArea.style.display = "block";
+        copyLinkContainer.style.display = "inline-block";
+        previewSubject.innerText = customSubjectInput.value || "Custom Message";
+        previewBody.innerHTML = customMessageTextarea.value
+          ? `<p>${customMessageTextarea.value.replace(/\n/g, "<br>")}</p>`
+          : "<p>(Write your own content above)</p>";
+      } else {
+        customMessageArea.style.display = "none";
+        copyLinkContainer.style.display = "none";
+        previewSubject.innerText = previews[selected].subject;
+        previewBody.innerHTML = previews[selected].html;
+      }
+    });
+
+    customSubjectInput.addEventListener("input", () => {
+      if (templateSelect.value === "Custom") {
+        previewSubject.innerText = customSubjectInput.value || "Custom Message";
+      }
+    });
+
+    customMessageTextarea.addEventListener("input", () => {
+      if (templateSelect.value === "Custom") {
+        previewBody.innerHTML = customMessageTextarea.value
+          ? `<p>${customMessageTextarea.value.replace(/\n/g, "<br>")}</p>`
+          : "<p>(Write your own content above)</p>";
+      }
+    });
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-tab');
+        tabs.forEach(t => t.classList.remove('active'));
+        modules.forEach(m => m.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelector(`.module[data-content="${target}"]`).classList.add('active');
+      });
+    });
+
+    document.getElementById("addUserBtn").addEventListener("click", () => {
+  const name = document.getElementById("newUserName").value.trim();
+  const email = document.getElementById("newUserEmail").value.trim();
+  const role = document.getElementById("newUserRole").value.trim();
+
+  const feedback = document.getElementById("userFeedback");
+  const recipientsList = document.getElementById("recipientsList");
+  const tableBody = document.getElementById("userTableBody");
+  
+  const tabButtons = document.querySelectorAll(".tab-button");
+const tabContents = document.querySelectorAll(".tab-content");
+
+tabButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    const tabId = button.getAttribute("data-tab");
+
+    tabButtons.forEach(btn => btn.classList.remove("active"));
+    button.classList.add("active");
+
+    tabContents.forEach(tc => tc.classList.remove("active"));
+    document.getElementById(tabId).classList.add("active");
+  });
+});
+
+
+  // Basic validation
+  if (!name || !email || !email.includes("@")) {
+    feedback.style.color = "red";
+    feedback.textContent = "Please enter a valid name and email.";
+    return;
+  }
+
+  // Check if user already exists
+  const existingEmails = Array.from(document.querySelectorAll('#recipientsList input[type="checkbox"]')).map(cb => cb.value);
+  if (existingEmails.includes(email)) {
+    feedback.style.color = "orange";
+    feedback.textContent = "User already exists.";
+    return;
+  }
+
+  // Send to backend
+  fetch("/api/add-user", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, role })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      feedback.style.color = "green";
+      feedback.textContent = "User added successfully!";
+      document.getElementById("newUserName").value = "";
+      document.getElementById("newUserEmail").value = "";
+      document.getElementById("newUserRole").value = "";
+
+
+      // Add to recipients list
+      const newLabel = document.createElement("label");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = email;
+
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = ` ${name} `;
+      const emailSpan = document.createElement("span");
+      emailSpan.textContent = `(${email})`;
+      emailSpan.style.color = "#888";
+      emailSpan.style.fontSize = "13px";
+
+      newLabel.appendChild(checkbox);
+      newLabel.appendChild(nameSpan);
+      newLabel.appendChild(emailSpan);
+      recipientsList.appendChild(newLabel);
+
+      // Add to user table
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td style="padding: 10px;">${name}</td>
+        <td style="padding: 10px;">${email}</td>
+        <td style="padding: 10px; text-align: center;">
+          <button class="deleteUserBtn" style="background: none; border: none; cursor: pointer; color: #e74c3c; font-size: 16px;">🗑️</button>
+        </td>
+      `;
+
+      // Delete button logic
+      row.querySelector(".deleteUserBtn").addEventListener("click", () => {
+        row.remove();
+        // Remove from recipients list too
+        fetch(`/api/delete-user/${email}`, { method: 'DELETE' })
+          .then(res => res.json())
+          .then(data => {
+            if (!data.success) {
+              alert("Failed to delete user");
+        }
+      });
+
+      });
+
+      tableBody.appendChild(row);
+
+    } else {
+      feedback.style.color = "red";
+      feedback.textContent = "Failed to add user.";
+    }
+  })
+  .catch(() => {
+    feedback.style.color = "red";
+    feedback.textContent = "Server error while adding user.";
+  });
+});
+
+    // Send Email button handler
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      const template = templateSelect.value;
+
+      const recipientCheckboxes = document.querySelectorAll('#recipientsList input[type="checkbox"]:checked');
+      const recipients = Array.from(recipientCheckboxes).map(cb => cb.value);
+
+      const customSubject = customSubjectInput.value;
+      const customMessage = customMessageTextarea.value;
+      const displayName = "OptiHR Security";
+      const spoofedEmail = "optihragency@gmail.com";
+
+
+      if (recipients.length === 0) {
+        alert("Please select at least one recipient.");
+        return;
+      }
+
+      fetch("/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          template,
+          recipients,
+          customSubject: template === "Custom" ? customSubject : null,
+          customMessage: template === "Custom" ? customMessage : null,
+          displayName,
+          spoofedEmail
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.success ? "Emails sent!" : "Failed to send.");
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Error sending email.");
+      });
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+  fetch("/api/users")
+    .then(res => res.json())
+    .then(users => {
+      const recipientsList = document.getElementById("recipientsList");
+      const tableBody = document.getElementById("userTableBody");
+
+      users.forEach(({ name, email }) => {
+        // Recipients List
+        const newLabel = document.createElement("label");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = email;
+
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = ` ${name} `;
+        const emailSpan = document.createElement("span");
+        emailSpan.textContent = `(${email})`;
+        emailSpan.style.color = "#888";
+        emailSpan.style.fontSize = "13px";
+
+        newLabel.appendChild(checkbox);
+        newLabel.appendChild(nameSpan);
+        newLabel.appendChild(emailSpan);
+        recipientsList.appendChild(newLabel);
+
+        // Users Table
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td style="padding: 10px;">${name}</td>
+          <td style="padding: 10px;">${email}</td>
+          <td style="padding: 10px; text-align: center;">
+            <button class="deleteUserBtn" style="background: none; border: none; cursor: pointer; color: #e74c3c; font-size: 16px;">🗑️</button>
+          </td>
+        `;
+
+        row.querySelector(".deleteUserBtn").addEventListener("click", () => {
+          row.remove();
+          Array.from(recipientsList.children).forEach(label => {
+            if (label.querySelector("input").value === email) {
+              label.remove();
+            }
+          });
+          // Optional: call API to delete user from DB here (see below)
+        });
+
+        tableBody.appendChild(row);
+      });
+    })
+    .catch(err => {
+      console.error("Failed to load users:", err);
+    });
+});
+
+  </script>
+</body>
+</html>

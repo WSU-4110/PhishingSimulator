@@ -1,0 +1,26 @@
+{
+  "name": "phishing-simulator",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.2",
+    "nodemailer": "^6.9.1"
+  },
+  "description": "1. Install MySQL.\r 2. Run `create_tables.sql` to create the database:",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WSU-4110/PhishingSimulator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WSU-4110/PhishingSimulator/issues"
+  },
+  "homepage": "https://github.com/WSU-4110/PhishingSimulator#readme"
+}

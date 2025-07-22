@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Phishing Simulator Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset and base */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f9f9f9;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333;
+    }
+
+    .login-container {
+      background-color: #ffffff;
+      padding: 40px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 320px;
+      text-align: center;
+    }
+
+    .login-container h1 {
+      margin-bottom: 24px;
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 28px;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      border: 1.5px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+      outline: none;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #2980b9;
+      box-shadow: 0 0 6px rgba(41, 128, 185, 0.4);
+    }
+
+    button {
+      width: 100%;
+      background-color: #2980b9;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px 0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3);
+    }
+
+    button:hover {
+      background-color: #1f5d90;
+      box-shadow: 0 6px 14px rgba(31, 93, 144, 0.6);
+    }
+
+    #error {
+      margin-top: 12px;
+      color: #e74c3c;
+      font-weight: 600;
+      font-size: 14px;
+      min-height: 18px;
+      text-align: left;
+    }
+
+    /* Optional: subtle animation on load */
+    .login-container {
+      animation: fadeIn 0.7s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h1>Login</h1>
+
+    <form onsubmit="handleLogin(event)">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" autocomplete="username" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required />
+
+      <button type="submit">Login</button>
+
+      <p id="error"></p>
+    </form>
+  </div>
+
+<script>
+  async function handleLogin(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const errorDisplay = document.getElementById("error");
+
+    if (!username || !password) {
+      errorDisplay.textContent = "Please fill in both fields.";
+      return;
+    }
+
+    errorDisplay.textContent = ""; // Clear previous errors
+
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        window.location.href = '/dashboard.html';
+      } else {
+        errorDisplay.textContent = data.error || "Login failed.";
+      }
+    } catch (error) {
+      errorDisplay.textContent = "Network error. Please try again.";
+      console.error(error);
+    }
+  }
+</script>
+
+</body>
+</html>
