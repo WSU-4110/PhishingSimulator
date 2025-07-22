@@ -218,40 +218,40 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>Phishing Simulator</h1>
-    <p>Welcome to the Admin Dashboard. Use the simulator to send fake phishing emails to employees and track their awareness training progress.</p>
-  </header>
+<header>
+  <h1>Phishing Simulator</h1>
+  <p>Welcome to the Admin Dashboard. Use the simulator to send fake phishing emails to employees and track their awareness training progress.</p>
+</header>
 
-  <div class="tabs">
-    <div class="tab active" data-tab="1">Simulator</div>
-    <div class="tab" data-tab="2">Manage Users</div>
-    <div class="tab" data-tab="3">Campaign Analytics</div>
-    <div class="tab" data-tab ="4">Module Progress</div>
+<div class="tabs">
+  <div class="tab active" data-tab="1">Simulator</div>
+  <div class="tab" data-tab="2">Manage Users</div>
+  <div class="tab" data-tab="3">Campaign Analytics</div>
+  <div class="tab" data-tab ="4">Module Progress</div>
+</div>
+
+<div class="module active" data-content="1">
+  <h2>Send Phishing Simulation</h2>
+  <label for="template">Choose Template:</label>
+  <select id="template" class="styled-select">
+    <option value="DocShare">Document Share</option>
+    <option value="PasswordReset">Password Reset</option>
+    <option value="PayStub">Pay Stub</option>
+    <option value="Custom">Custom</option>
+  </select>
+
+  <div id="customMessageArea" style="display:none">
+    <label for="customMessage">Custom Message:</label>
+    <textarea id="customMessage" rows="4"></textarea>
   </div>
 
-  <div class="module active" data-content="1">
-    <h2>Send Phishing Simulation</h2>
-    <label for="template">Choose Template:</label>
-      <select id="template" class="styled-select">
-        <option value="DocShare">Document Share</option>
-        <option value="PasswordReset">Password Reset</option>
-        <option value="PayStub">Pay Stub</option>
-        <option value="Custom">Custom</option>
-      </select>
+  <div class="email-preview" id="preview">
+    <h3>Email Preview</h3>
+    <p><strong>Subject:</strong> <span id="preview-subject">Your Latest Pay Stub is Ready</span></p>
+    <p><strong>Body:</strong></p>
+    <div id="preview-body"><p>Your pay stub is now available. <a href="#">View Pay Stub</a></p></div>
+  </div>
 
-    <div id="customMessageArea" style="display:none">
-      <label for="customMessage">Custom Message:</label>
-      <textarea id="customMessage" rows="4"></textarea>
-    </div>
-
-    <div class="email-preview" id="preview">
-      <h3>Email Preview</h3>
-      <p><strong>Subject:</strong> <span id="preview-subject">Your Latest Pay Stub is Ready</span></p>
-      <p><strong>Body:</strong></p>
-      <div id="preview-body"><p>Your pay stub is now available. <a href="#">View Pay Stub</a></p></div>
-    </div>
-    
   <label>Recipients:</label>
   <div id="recipientsList" class="recipients-list">
     <!-- Initial emails as checkboxes -->
@@ -261,47 +261,47 @@
     <label><input type="checkbox" value="samayyahcook@wayne.edu" /> Samayyah Cook</label>
   </div>
 
-<div class="add-email-container">
-  <input type="text" id="newEmailInput" placeholder="Add new email and press Enter" />
-  <div id="newEmailError" style="color: red; font-size: 13px; display:none; margin-top: 5px;">Invalid email format.</div>
-</div>
+  <div class="add-email-container">
+    <input type="text" id="newEmailInput" placeholder="Add new email and press Enter" />
+    <div id="newEmailError" style="color: red; font-size: 13px; display:none; margin-top: 5px;">Invalid email format.</div>
+  </div>
 
-    <!-- New sender spoofing inputs -->
+  <!-- New sender spoofing inputs -->
   <label for="displayName">Sender Name:</label>
   <input type="text" id="displayName" placeholder="e.g., HR Department" class="styled-input" />
 
   <label for="spoofedEmail">Sender Email:</label>
   <input type="text" id="spoofedEmail" placeholder="e.g., hr@company-support.com" class="styled-input" />
 
-    <button id="sendBtn">Send Email</button>
+  <button id="sendBtn">Send Email</button>
 
-  </div>
+</div>
 
-  <div class="module" data-content="2">
-    <h2>Manage Users</h2>
-    <p>Coming soon: View, add, and manage employees here.</p>
-  </div>
+<div class="module" data-content="2">
+  <h2>Manage Users</h2>
+  <p>Coming soon: View, add, and manage employees here.</p>
+</div>
 
-  <div class="module" data-content="3">
-    <h2>Campaign Analytics</h2>
-    <p>Coming soon: View who opened, clicked, and responded to phishing tests.</p>
-  </div>
+<div class="module" data-content="3">
+  <h2>Campaign Analytics</h2>
+  <p>Coming soon: View who opened, clicked, and responded to phishing tests.</p>
+</div>
 
-  <div class="module" data-content="4">
+<div class="module" data-content="4">
   <h2>Module Progress & Assignment</h2>
 
   <table style="width:100%; border-collapse: collapse; margin-bottom: 30px;">
     <thead>
-      <tr style="background-color: #2980b9; color: white;">
-        <th style="padding: 12px; text-align: left;">Employee</th>
-        <th style="padding: 12px; text-align: left;">Email</th>
-        <th style="padding: 12px; text-align: left;">Assigned Modules</th>
-        <th style="padding: 12px; text-align: left;">Completed</th>
-        <th style="padding: 12px; text-align: left;">Progress</th>
-      </tr>
+    <tr style="background-color: #2980b9; color: white;">
+      <th style="padding: 12px; text-align: left;">Employee</th>
+      <th style="padding: 12px; text-align: left;">Email</th>
+      <th style="padding: 12px; text-align: left;">Assigned Modules</th>
+      <th style="padding: 12px; text-align: left;">Completed</th>
+      <th style="padding: 12px; text-align: left;">Progress</th>
+    </tr>
     </thead>
     <tbody id="progressTableBody">
-      <!-- Filled dynamically -->
+    <!-- Filled dynamically -->
     </tbody>
   </table>
 
@@ -320,18 +320,15 @@
   <button id="assignModuleBtn">Assign Module</button>
 </div>
 
-
-  <script>
-
-  const token = localStorage.getItem("authToken"); 
+<script>
+  const token = localStorage.getItem("token");
 
   if (!token) {
-    // Not logged in, redirect to login page
     window.location.href = "/login.html";
   }
 
-  // verify token with backend
-  fetch("/verify-token", {
+  // Verify token with backend
+  fetch('/api/verify-token', {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${token}`
@@ -339,7 +336,6 @@
   })
   .then(res => {
     if (!res.ok) {
-      // Invalid token, force logout
       window.location.href = "/login.html";
     }
   })
@@ -347,150 +343,146 @@
     window.location.href = "/login.html";
   });
 
+  const tabs = document.querySelectorAll('.tab');
+  const modules = document.querySelectorAll('.module');
+  const templateSelect = document.getElementById("template");
+  const previewSubject = document.getElementById("preview-subject");
+  const previewBody = document.getElementById("preview-body");
+  const customMessageArea = document.getElementById("customMessageArea");
 
-  
-    const tabs = document.querySelectorAll('.tab');
-    const modules = document.querySelectorAll('.module');
-    const templateSelect = document.getElementById("template");
-    const previewSubject = document.getElementById("preview-subject");
-    const previewBody = document.getElementById("preview-body");
-    const customMessageArea = document.getElementById("customMessageArea");
-
-    const previews = {
-      "DocShare": {
-        subject: "New Document Shared With You",
-        html: "<p>You received a secure document. <a href='#'>View Document</a></p>"
-      },
-      "PasswordReset": {
-        subject: "Action Required: Password Reset Request",
-        html: "<p>Your account needs a password reset. <a href='#'>Reset Now</a></p>"
-      },
-      "PayStub": {
-        subject: "Your Latest Pay Stub is Ready",
-        html: "<p>Your pay stub is now available. <a href='#'>View Pay Stub</a></p>"
-      },
-      "Custom": {
-        subject: "Custom Message",
-        html: "<p>(Write your own content above)</p>"
-      }
-    };
-
-    templateSelect.addEventListener("change", () => {
-      const selected = templateSelect.value;
-      if (selected === "Custom") {
-        customMessageArea.style.display = "block";
-      } else {
-        customMessageArea.style.display = "none";
-      }
-      previewSubject.innerText = previews[selected].subject;
-      previewBody.innerHTML = previews[selected].html;
-    });
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const target = tab.getAttribute('data-tab');
-        tabs.forEach(t => t.classList.remove('active'));
-        modules.forEach(m => m.classList.remove('active'));
-        tab.classList.add('active');
-        document.querySelector(`.module[data-content="${target}"]`).classList.add('active');
-      });
-    });
-
-document.getElementById("sendBtn").addEventListener("click", () => {
-  const template = document.getElementById("template").value;
-
-  const recipientCheckboxes = document.querySelectorAll('#recipientsList input[type="checkbox"]:checked');
-  const recipients = Array.from(recipientCheckboxes).map(cb => cb.value);
-
-  const customMessage = document.getElementById("customMessage").value;
-  const displayName = document.getElementById("displayName").value || "OptiHR Security";
-  const spoofedEmail = document.getElementById("spoofedEmail").value || "optihragency@gmail.com";
-
-  if (recipients.length === 0) {
-    alert("Please select at least one recipient.");
-    return;
-  }
-  fetch("/send-email", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const previews = {
+    "DocShare": {
+      subject: "New Document Shared With You",
+      html: "<p>You received a secure document. <a href='#'>View Document</a></p>"
     },
-    body: JSON.stringify({
-      template,
-      recipients,
-      customMessage,
-      displayName,
-      spoofedEmail
+    "PasswordReset": {
+      subject: "Action Required: Password Reset Request",
+      html: "<p>Your account needs a password reset. <a href='#'>Reset Now</a></p>"
+    },
+    "PayStub": {
+      subject: "Your Latest Pay Stub is Ready",
+      html: "<p>Your pay stub is now available. <a href='#'>View Pay Stub</a></p>"
+    },
+    "Custom": {
+      subject: "Custom Message",
+      html: "<p>(Write your own content above)</p>"
+    }
+  };
+
+  templateSelect.addEventListener("change", () => {
+    const selected = templateSelect.value;
+    if (selected === "Custom") {
+      customMessageArea.style.display = "block";
+    } else {
+      customMessageArea.style.display = "none";
+    }
+    previewSubject.innerText = previews[selected].subject;
+    previewBody.innerHTML = previews[selected].html;
+  });
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.getAttribute('data-tab');
+      tabs.forEach(t => t.classList.remove('active'));
+      modules.forEach(m => m.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelector(`.module[data-content="${target}"]`).classList.add('active');
+    });
+  });
+
+  document.getElementById("sendBtn").addEventListener("click", () => {
+    const template = document.getElementById("template").value;
+    const recipientCheckboxes = document.querySelectorAll('#recipientsList input[type="checkbox"]:checked');
+    const recipients = Array.from(recipientCheckboxes).map(cb => cb.value);
+    const customMessage = document.getElementById("customMessage").value;
+    const displayName = document.getElementById("displayName").value || "OptiHR Security";
+    const spoofedEmail = document.getElementById("spoofedEmail").value || "optihragency@gmail.com";
+
+    if (recipients.length === 0) {
+      alert("Please select at least one recipient.");
+      return;
+    }
+
+    fetch("/send-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        template,
+        recipients,
+        customMessage,
+        displayName,
+        spoofedEmail
+      })
     })
-  })
-  .then(res => res.json())
-  .then(data => {
-    alert(data.success ? "Emails sent!" : "Failed to send.");
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Error sending email.");
+    .then(res => res.json())
+    .then(data => {
+      alert(data.success ? "Emails sent!" : "Failed to send.");
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Error sending email.");
+    });
   });
-});
 
-    const progressData = [
-  {
-    name: "TaSain Thomas",
-    email: "tvthomas1@wayne.edu",
-    assigned: ["Intro to Phishing", "Email Spoofing 101"],
-    completed: ["Intro to Phishing"]
-  },
-  {
-    name: "Andrea Aguirre",
-    email: "hh9241@wayne.edu",
-    assigned: ["Credential Safety"],
-    completed: []
-  },
-];
+  const progressData = [
+    {
+      name: "TaSain Thomas",
+      email: "tvthomas1@wayne.edu",
+      assigned: ["Intro to Phishing", "Email Spoofing 101"],
+      completed: ["Intro to Phishing"]
+    },
+    {
+      name: "Andrea Aguirre",
+      email: "hh9241@wayne.edu",
+      assigned: ["Credential Safety"],
+      completed: []
+    },
+  ];
 
-function populateProgressTable() {
-  const tbody = document.getElementById("progressTableBody");
-  tbody.innerHTML = "";
+  function populateProgressTable() {
+    const tbody = document.getElementById("progressTableBody");
+    tbody.innerHTML = "";
 
-  progressData.forEach(user => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td style="padding:10px;">${user.name}</td>
-      <td style="padding:10px;">${user.email}</td>
-      <td style="padding:10px;">${user.assigned.join(", ")}</td>
-      <td style="padding:10px;">${user.completed.join(", ")}</td>
-      <td style="padding:10px;">
-        ${Math.round((user.completed.length / user.assigned.length) * 100)}%
-      </td>
-    `;
-    tbody.appendChild(row);
-  });
-}
-
-// Call it when tab 4 is clicked
-document.querySelector('.tab[data-tab="4"]').addEventListener("click", populateProgressTable);
-
-document.getElementById("assignModuleBtn").addEventListener("click", () => {
-  const email = document.getElementById("assignEmail").value.trim();
-  const module = document.getElementById("assignModule").value;
-
-  const user = progressData.find(u => u.email === email);
-  if (!user) {
-    alert("User not found.");
-    return;
+    progressData.forEach(user => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td style="padding:10px;">${user.name}</td>
+        <td style="padding:10px;">${user.email}</td>
+        <td style="padding:10px;">${user.assigned.join(", ")}</td>
+        <td style="padding:10px;">${user.completed.join(", ")}</td>
+        <td style="padding:10px;">
+          ${Math.round((user.completed.length / user.assigned.length) * 100)}%
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
   }
 
-  if (user.assigned.includes(module)) {
-    alert("Module already assigned.");
-    return;
-  }
+  document.querySelector('.tab[data-tab="4"]').addEventListener("click", populateProgressTable);
 
-  user.assigned.push(module);
-  alert(`Module "${module}" assigned to ${user.name}.`);
-  populateProgressTable();
-});
+  document.getElementById("assignModuleBtn").addEventListener("click", () => {
+    const email = document.getElementById("assignEmail").value.trim();
+    const module = document.getElementById("assignModule").value;
+
+    const user = progressData.find(u => u.email === email);
+    if (!user) {
+      alert("User not found.");
+      return;
+    }
+
+    if (user.assigned.includes(module)) {
+      alert("Module already assigned.");
+      return;
+    }
+
+    user.assigned.push(module);
+    alert(`Module "${module}" assigned to ${user.name}.`);
+    populateProgressTable();
+  });
+</script>
 
 
-  </script>
 </body>
 </html>
