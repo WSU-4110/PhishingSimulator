@@ -194,7 +194,7 @@ app.post('/api/add-user', async (req, res) => {
 
 app.get('/api/users', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT id, name, email FROM Employees');
+    const [rows] = await pool.query('SELECT name, email FROM Employees');
     res.json(rows);
   } catch (err) {
     console.error("MySQL error:", err);
@@ -275,3 +275,26 @@ app.post("/send-email", (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+
+//const fs = require('fs');
+const trackingPath = './tracking.json';
+
+app.get("/api/tracking", (req, res) => {
+  const trackingPath = path.join(__dirname, "tracking.json");
+  fs.readFile(trackingPath, "utf8", (err, data) => {
+    if (err) {
+      return res.status(500).json({ error: "Unable to read tracking file" });
+    }
+
+    const trackingRaw = JSON.parse(data);
+    const trackingData = Object.values(trackingRaw).map(entry => ({
+      name: "-", // placeholder since no name exists in tracking.json
+      email: entry.email[0],
+      opened: entry.opened,
+      clicked: false // placeholder unless you’re tracking this separately
+    }));
+
+    res.json(trackingData);
+  });
+});
+
