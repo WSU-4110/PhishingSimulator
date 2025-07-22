@@ -167,6 +167,12 @@ app.post("/send-email", (req, res) => {
   });
 });
 
+app.post('/verify-token', verifyToken, (req, res) => {
+  // If verifyToken middleware passes, token is valid
+  res.json({ valid: true, user: req.user });
+});
+
+
 // Save quiz/module result from employee
 app.post('/api/submit-result', (req, res) => {
   const { username, moduleName, score, timestamp } = req.body;
