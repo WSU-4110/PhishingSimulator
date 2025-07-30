@@ -1,5 +1,6 @@
 const mysql = require('mysql2');
 
+
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -7,21 +8,12 @@ const db = mysql.createConnection({
   database: 'phishing_platform'
 });
 
-connection.connect((err) => {
-  if (err) {
-    console.error('Connection failed:', err.message);
-  } else {
-    console.log('Connected to MySQL!');
-    connection.end();
-  }
-});
+if (process.env.NODE_ENV !== 'test') {
+  db.connect((err) => {
+    if (err) console.error('MySQL connection error:', err);
+    else console.log('Connected to MySQL');
+  });
+}
 
-db.connect((err) => {
-  if (err) {
-    console.error('MySQL connection error:', err);
-  } else {
-    console.log('Connected to MySQL');
-  }
-});
 
 module.exports = db;
