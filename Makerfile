@@ -1,0 +1,8 @@
+install:
+	npm install
+
+test:
+	npm test
+
+build: install test
+	@echo "✅ Build and tests completed successfully."
