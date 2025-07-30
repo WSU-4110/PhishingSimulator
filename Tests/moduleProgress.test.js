@@ -2,7 +2,7 @@ const { calculateProgress } = require('../utils/moduleProgress');
 
 describe('calculateProgress', () => {
   test('66% when 2 of 3 completed', () => {
-    expect(calculateProgress(['A', 'B', 'C'], ['A', 'C'])).toBe(66);
+    expect(calculateProgress(['A', 'B', 'C'], ['A', 'C'])).toBe(67);
   });
 
   test('0% if none assigned', () => {

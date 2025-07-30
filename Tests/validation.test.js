@@ -1,5 +1,6 @@
 const { validateEmail } = require('../utils/validation');
 
+
 describe('validateEmail', () => {
   test('validates correct email format', () => {
     expect(validateEmail('test@example.com')).toBe(true);
